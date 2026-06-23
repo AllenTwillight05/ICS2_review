@@ -1,153 +1,191 @@
-# 05 Agent 复习提纲
+# 05 Agent 开卷速查
 
-## 考试定位
+## 一分钟速查
 
-AGENT 是老师新加的专题，用户说明暂时没有真题，所以这里按填空/简答准备。重点参考 `courseware/2-16-agent_*.pdf` 和 `courseware/review.pdf`。
+Agent 目前没有 EXE/QUIZ 真题，老师在复习课里也说不太确定最后怎么出，大概率是概念/定性题。复习重点不是死背 buzzwords，而是会用系统课语言解释 Agent 是怎么工作的。
 
-复习目标：能用系统课语言解释 AI Agent，而不是只背“LLM 很强”。关键词要能中英对照。
+来源优先级：
 
-## 一句话理解
+- `courseware/2-16-agent_*.pdf`：Agent 专题课件。
+- `courseware/review.pdf`：Agent review slides。
+- `reviewClass.txt / reviewClass_summary.md`：复习课口径，重点是 Agent 设计和 Agent loop。
 
-AI Agent 可以理解为：
+题型对应来源：
+
+| 题型 | 主要来源 |
+|---|---|
+| `Agent = LLM + Harness`、Agent loop 四步 | `courseware/review.pdf`；`2-16-agent_*.pdf` |
+| Agent memory / tools / multi-agent 与 CSAPP 的联系 | `courseware/2-16-agent_*.pdf` |
+| Agent 设计类简答题 | `reviewClass.txt` |
+
+核心句：
+
+> Agent 不是“一个会聊天的模型”，而是 LLM 在 harness 支撑下，围绕 goal 持续感知、推理、行动、观察的系统。
+
+## 一句话定义
 
 ```text
 Agent = LLM + Harness
 ```
 
-LLM（Large Language Model）负责推理、生成计划、决定行动；Harness 是外部执行框架，负责提供上下文、工具调用、权限控制、记忆管理、观察结果回填等系统工程能力。
+- LLM：负责推理、计划、决定下一步做什么。
+- Harness：负责上下文、工具调用、权限、安全、记忆管理、执行结果回填。
 
-课件中的 Agent Loop：
+老师如果问“为什么不能只有 LLM”，标准思路就是：
 
-```text
-goal -> observation -> LLM -> action -> observation -> LLM -> action ...
-```
+> 因为真正完成任务还需要工具、状态、权限、执行和反馈闭环，这些都属于 harness 的系统工程部分。
 
-也就是不断观察、思考、行动、再观察。
+## Agent Loop
 
-## Agent Loop 四步闭环
-
-1. 感知（Perception）
-
-接收用户输入、系统提示词、环境状态，从 memory 中加载上下文。它是 Agent 的“感官”。
-
-2. 认知（Cognition）
-
-LLM 推理当前状态，制定计划，判断下一步该做什么。它是 Agent 的“大脑”。
-
-3. 行动（Action）
-
-调用 API、执行代码、查询数据库、调用工具。常见机制是 function calling / tool calling。
-
-4. 观察（Observation）
-
-接收工具结果，把结果追加回上下文，判断任务是否完成；未完成则回到 cognition 继续循环。
-
-填空题记忆：
+课件中的四步闭环：
 
 ```text
 Perception -> Cognition -> Action -> Observation
 ```
 
-## Agent Memory 与 CSAPP
+### 1. Perception
 
-智能体记忆（agent memory）可以类比计算机系统中的存储层次。
+- 接收用户输入
+- 读取系统提示词
+- 从 memory 载入上下文
 
-三个朴素方案：
+相当于 Agent 的“感官”。
+
+### 2. Cognition
+
+- LLM 分析当前状态
+- 制定计划
+- 决定下一步行动
+
+相当于 Agent 的“大脑”。
+
+### 3. Action
+
+- 调 API
+- 调工具
+- 执行代码
+- 查数据库
+
+相当于 Agent 的“手”。
+
+### 4. Observation
+
+- 接收工具执行结果
+- 把结果追加进上下文
+- 判断任务是否完成
+
+如果没完成，就回到 Cognition 继续循环。
+
+## 题型模板
+
+### 1. 填空：Agent = ?
+
+来源：`courseware/review.pdf`。
+
+答案：
+
+```text
+Agent = LLM + Harness
+```
+
+### 2. 填空：Agent Loop 四步
+
+来源：`courseware/review.pdf`、`2-16-agent_*.pdf`。
+
+答案：
+
+```text
+Perception, Cognition, Action, Observation
+```
+
+### 3. 简答：为什么 Agent memory 需要分层
+
+来源：`courseware/2-16-agent_*.pdf`。
+
+关键词：
+
+- hierarchy
+- on-demand loading
+- replacement
+- compression
+
+答题思路：
+
+> 上下文窗口快但小，长期信息多但慢，不能把所有历史都塞进 prompt。要像 memory hierarchy 一样分层管理，并按需加载、压缩、替换。
+
+### 4. 简答：Agent tools 与系统课有什么关系
+
+来源：`courseware/2-16-agent_*.pdf`。
+
+对应关系：
+
+- tool calling / function calling -> calling convention
+- 启动工具 -> process creation / execution
+- 远程工具 -> network / RPC
+- 权限与隔离 -> protection / sandbox
+- 错误恢复 -> robustness
+
+答题句式：
+
+> LLM 只决定 action intent，真正的 action 由 harness 在协议、权限和执行环境约束下完成；结果再回流为 observation。
+
+### 5. 简答：Multi-Agent 的好处
+
+来源：`courseware/2-16-agent_*.pdf`。
+
+高频点：
+
+- 分工
+- 并行
+- 降低单个上下文复杂度
+- 互相校验
+- 易扩展
+
+一句话：
+
+> 多智能体协作像多进程/多线程分工一样，可以把复杂任务拆开，让不同角色并行推进并互相检查。
+
+## Agent memory 与 CSAPP
+
+Agent memory 可类比系统中的存储层次：
 
 1. 分层存（hierarchy）
-
-不是所有信息都放在上下文窗口里。快但小的层保存当前关键上下文，慢但大的层保存长期记忆或文件。
-
 2. 按需取（on-demand）
-
-需要时再加载相关信息，而不是一次性读入所有历史。
-
 3. 扔旧的（replacement）
+4. 必要时压缩（compression）
 
-上下文放不下时，要选择淘汰旧的、不常用的或低价值信息。对应系统里的 replacement policy。
+常见类比：
 
-关键词：
+- context window -> working memory
+- 长期记忆库 -> slower / larger storage
+- 检索 -> demand paging / on-demand loading
+- 替换旧上下文 -> replacement policy
 
-- hierarchy：分层。
-- on-demand loading：按需加载。
-- replacement：替换。
-- compression：压缩。
-- long-term memory：长期记忆。
-- working memory / context window：工作记忆 / 上下文窗口。
+## Multi-Agent 与系统课
 
-可答句式：Agent memory 需要像 OS 管理内存一样，在容量、速度和相关性之间折中；不能把所有历史都塞进 prompt，因此需要分层、检索、压缩和替换。
+课件里强调的联系：
 
-## Agent Tools 与 CSAPP
+- process scheduling
+- concurrency and synchronization
+- IPC
 
-工具调用不是“模型自己会做所有事”，而是 LLM 决定调用外部工具，由系统执行。
+换句话说，Agent 系统不是“只靠模型本身”，而是要处理：
 
-和 CSAPP 的关系：
+- 谁先做
+- 谁和谁通信
+- 并发结果怎么合并
+- 工具失败时如何恢复
 
-- MCP / CLI 可以类比 calling convention：工具调用需要约定输入、输出、错误格式。
-- 启动工具对应 process creation / execution。
-- 调用远程工具对应 network / RPC。
-- 工具权限对应 protection / privilege / sandbox。
-- 工具失败重试对应 robustness。
-- speculative execution 可以类比多路径尝试或预测性执行，但要注意安全和回滚。
+## 考场检查清单
 
-关键词：
+1. 一上来先记住：`Agent = LLM + Harness`。
+2. Agent Loop 四步必须能默写。
+3. 简答题尽量用系统课语言，不要只说“模型很聪明”。
+4. memory 题想到 hierarchy / on-demand / replacement。
+5. tools 题想到 process / network / permission / robustness。
+6. multi-agent 题想到分工、并行、校验、同步。
 
-- Tool calling / Function calling：工具调用 / 函数调用。
-- MCP: Model Context Protocol，模型上下文协议。
-- CLI: Command-Line Interface，命令行接口。
-- API: Application Programming Interface，应用程序接口。
-- Sandbox：沙箱。
-- Permission control：权限控制。
-- Robustness：鲁棒性。
-
-简答题常用句式：LLM 只产生 action intent，真正的 action 由 harness 在权限和协议约束下执行；执行结果再作为 observation 返回给 LLM。
-
-## Multi-Agent
-
-多智能体协作（multi-agent collaboration）的优势：
-
-- 专业分工：不同 Agent 负责写码、审查、测试、检索等。
-- 降低复杂度：任务拆解后，每个上下文更清晰。
-- 并行高效：多个子任务可同时推进。
-- 相互校验：互审互评，减少 hallucination。
-- 灵活扩展：按需增加或减少角色。
-
-适用场景：
-
-- 软件研发：coding / review / testing / debugging。
-- 深度研究：parallel search + synthesis。
-- 多视角决策：debate / voting / evaluation。
-- 模拟与仿真：role-playing / social simulation。
-
-和系统课的关系：
-
-- 多进程调度（process scheduling）。
-- 并发与同步（concurrency and synchronization）。
-- 进程间通信（inter-process communication, IPC）。
-
-## Agent 的系统工程难点
-
-1. Context 管理
-
-上下文窗口有限，需要选择放什么，不放什么。
-
-2. Tool 安全
-
-工具可能读写文件、联网、执行代码，必须有权限控制和隔离。
-
-3. Observation 可信度
-
-工具结果可能失败、截断或过期，Agent 要能检查错误。
-
-4. Planning 与 replanning
-
-计划可能在执行中被新观察推翻，因此需要循环修正。
-
-5. Concurrency
-
-多 Agent 或多工具并行时，需要同步、去重、合并结果，避免竞态。
-
-## 高频英文术语
+## 高频术语
 
 - Agent：智能体。
 - LLM: Large Language Model，大语言模型。
@@ -162,38 +200,7 @@ Perception -> Cognition -> Action -> Observation
 - On-demand loading：按需加载。
 - Replacement policy：替换策略。
 - Compression：压缩。
-- MCP: Model Context Protocol。
 - Sandbox：沙箱。
 - Multi-agent collaboration：多智能体协作。
 - Hallucination：幻觉。
 - IPC: Inter-Process Communication，进程间通信。
-
-## 可能填空/简答
-
-Q: Agent = ?
-
-A: `LLM + Harness`。
-
-Q: Agent Loop 四步？
-
-A: Perception, Cognition, Action, Observation。
-
-Q: 为什么 Agent memory 需要分层？
-
-A: 因为上下文窗口快但小，长期信息多但慢，需要像 memory hierarchy 一样按重要性和使用频率分层管理。
-
-Q: 工具调用为什么需要系统工程？
-
-A: 因为需要协议、进程执行、网络调用、权限、安全和错误处理；LLM 只是决策，harness 才负责可靠执行。
-
-Q: 多智能体有什么好处？
-
-A: 分工、并行、降低单个上下文复杂度、相互校验、易扩展。
-
-## 考前速记
-
-- `Agent = LLM + Harness`。
-- Loop：感知、认知、行动、观察。
-- Memory：分层、按需、替换、压缩。
-- Tools：协议、进程、网络、权限、鲁棒性。
-- Multi-Agent：分工、并行、校验、同步。
