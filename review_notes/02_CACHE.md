@@ -2,7 +2,7 @@
 
 ## 一分钟速查
 
-Cache 题几乎一定是计算题：容量、地址拆分、hit/miss、byte returned、miss rate、LRU/write-back、优化解释。复习课明确说 generic cache organization 那张图“肯定会考”。
+Cache 题几乎一定是计算题：容量、地址拆分、hit/miss、byte returned、miss rate、LRU/write-back、优化解释。复习课明确说 generic cache organization 那张图（review.pdf p17）“肯定会考”。
 
 来源优先级：
 
@@ -72,6 +72,8 @@ set_index    = block_number % S
 tag          = block_number / S
 offset       = address % B
 ```
+
+小技巧：如果 `s + b` 不是 4 的整数倍，不能只靠十六进制位数直接截断得到 tag。把地址当作无符号位串做逻辑右移：右移 `b` 位等价于除以 `B` 得到 `block_number`，再右移 `s` 位等价于除以 `S` 得到 `tag`。每右移 1 位就是 `/2`，考试时可以用这个快速算。比如 s+b=6 时把 HEX 最右位抛掉（ 4 位 DEC ）后剩余的部分 DEC 右移 2 位，即 `/4`
 
 ## 题型模板
 
@@ -181,7 +183,7 @@ C[i] = A[i] * B[i] + C[i];
 
 - 调整数组起始地址，避免多个数组映射到同一 set。
 - 改循环顺序，让内层访问连续地址。
-- blocking / tiling，提高局部性。
+- blocking / tiling，小块访问，提高局部性。
 
 QUIZ 典型答法：把某个数组起始地址移动一点，例如让 `C[0]` 从 `0xC00` 改到 `0xC08`，避免 `A/B/C` 全部冲突。
 
