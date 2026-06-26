@@ -62,6 +62,8 @@ avg response   = sum(response) / job_count
 
 来源：`EXE/EXE7.pdf` Problem 3。
 
+<img src="../assets/schedule/fifo.png" width="300">
+
 规则：
 
 - First In, First Out / First Come, First Served。
@@ -83,6 +85,13 @@ avg response   = sum(response) / job_count
 
 来源：`EXE/EXE7.pdf` Problem 3。
 
+<p>
+  <img src="../assets/schedule/sjf-same-arrival.png" width="300" alt="SJF same arrival">
+  <img src="../assets/schedule/sjf-different-arrival.png" width="300" alt="SJF different arrival">
+</p>
+
+左图是 A/B/C 同时到达，右图是 A 先到达。
+
 规则：
 
 - Shortest Job First。
@@ -98,10 +107,12 @@ avg response   = sum(response) / job_count
 
 来源：`EXE/EXE7.pdf` Problem 3。
 
+<img src="../assets/schedule/stcf.png" width="300">
+
 规则：
 
 - Shortest Time-to-Completion First。
-- 抢占式 SJF。
+- 抢占式 SJF。（ preempt 打断）
 - 每次新 job 到达，都比较所有 ready jobs 的 remaining time。
 
 步骤：
@@ -118,6 +129,8 @@ avg response   = sum(response) / job_count
 ### 4. Round Robin
 
 来源：`EXE/EXE7.pdf` Problem 3。
+
+<img src="../assets/schedule/round-robin.png" width="300">
 
 规则：
 
@@ -146,7 +159,7 @@ avg response   = sum(response) / job_count
 2. 同优先级内按 RR。
 3. 新 job 通常进入最高优先级。
 4. 在某层用完 time allotment 后降级。
-5. 定期 priority boost 防止 starvation。
+5. 定期 priority boost 防止 starvation（把所有 job 重新提到最高优先级）。
 
 做题步骤：
 
