@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>01_GPU</title>
+  <style>
+
+html {
+color: #1a1a1a;
+background-color: #fdfdfd;
+}
+body {
+margin: 0 auto;
+max-width: 36em;
+padding-left: 50px;
+padding-right: 50px;
+padding-top: 50px;
+padding-bottom: 50px;
+hyphens: auto;
+overflow-wrap: break-word;
+text-rendering: optimizeLegibility;
+font-kerning: normal;
+}
+@media (max-width: 600px) {
+body {
+font-size: 0.9em;
+padding: 12px;
+}
+h1 {
+font-size: 1.8em;
+}
+}
+@media print {
+html {
+background-color: white;
+}
+body {
+background-color: transparent;
+color: black;
+font-size: 12pt;
+}
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+h2, h3, h4 {
+page-break-after: avoid;
+}
+}
+p {
+margin: 1em 0;
+}
+a {
+color: #1a1a1a;
+}
+a:visited {
+color: #1a1a1a;
+}
+img {
+max-width: 100%;
+}
+svg {
+height: auto;
+max-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+margin-top: 1.4em;
+}
+h5, h6 {
+font-size: 1em;
+font-style: italic;
+}
+h6 {
+font-weight: normal;
+}
+ol, ul {
+padding-left: 1.7em;
+margin-top: 1em;
+}
+li > ol, li > ul {
+margin-top: 0;
+}
+blockquote {
+margin: 1em 0 1em 1.7em;
+padding-left: 1em;
+border-left: 2px solid #e6e6e6;
+color: #606060;
+}
+code {
+white-space: pre-wrap;
+font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+font-size: 85%;
+margin: 0;
+hyphens: manual;
+}
+pre {
+margin: 1em 0;
+overflow: auto;
+}
+pre code {
+padding: 0;
+overflow: visible;
+overflow-wrap: normal;
+}
+.sourceCode {
+background-color: transparent;
+overflow: visible;
+}
+hr {
+border: none;
+border-top: 1px solid #1a1a1a;
+height: 1px;
+margin: 1em 0;
+}
+table {
+margin: 1em 0;
+border-collapse: collapse;
+width: 100%;
+overflow-x: auto;
+display: block;
+font-variant-numeric: lining-nums tabular-nums;
+}
+table caption {
+margin-bottom: 0.75em;
+}
+tbody {
+margin-top: 0.5em;
+border-top: 1px solid #1a1a1a;
+border-bottom: 1px solid #1a1a1a;
+}
+th {
+border-top: 1px solid #1a1a1a;
+padding: 0.25em 0.5em 0.25em 0.5em;
+}
+td {
+padding: 0.125em 0.5em 0.25em 0.5em;
+}
+header {
+margin-bottom: 4em;
+text-align: center;
+}
+#TOC li {
+list-style: none;
+}
+#TOC ul {
+padding-left: 1.3em;
+}
+#TOC > ul {
+padding-left: 0;
+}
+#TOC a:not(:hover) {
+text-decoration: none;
+}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+</head>
+<body>
+<h1 id="gpu-开卷速查">01 GPU 开卷速查</h1>
+<h2 id="一分钟速查">一分钟速查</h2>
+<p>GPU 题通常不是考复杂 CUDA 语法，而是考：索引、有效线程、warp
+divergence、CUDA 改 CPU、带宽/计算受限。</p>
+<p>来源优先级：</p>
+<ul>
+<li><code>EXE/gpu_exe.pdf</code>：一维 CUDA/SIMT
+分析，复习课重点讲过。</li>
+<li><code>EXE/gpu_exe_sol.pdf</code>：对应答案。</li>
+<li><code>EXE/EXE2.pdf</code>：Problem 1，3D mean filter / 三维索引 /
+<code>gridDim</code> 向上取整。</li>
+<li><code>EXE/EXE2-sol.pdf</code>：对应答案。</li>
+</ul>
+<p>注意：目前复习课和本章只把 <code>EXE/EXE2.pdf</code> Problem 1 纳入
+GPU 重点；<code>EXE2</code> Problem 2 不在当前 GPU
+考纲重点里，除非老师后续另行点名。</p>
+<p>题型对应来源：</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>题型</th>
+<th>主要来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>线程总数 / 有效线程 / 某线程 global index / 最后一个 block 无效线程
+/ warp divergence / CUDA 改 CPU / bandwidth-bound</td>
+<td><code>EXE/gpu_exe.pdf</code></td>
+</tr>
+<tr>
+<td>三维索引 / <code>blockDim</code>、<code>gridDim</code> / 三维 bounds
+check / grid 向上取整</td>
+<td><code>EXE/EXE2.pdf</code> Problem 1</td>
+</tr>
+</tbody>
+</table>
+<p>核心句：</p>
+<blockquote>
+<p>CUDA kernel 写的是“一个 thread 的逻辑”；GPU launch 后很多 threads
+并行执行这段逻辑。</p>
+</blockquote>
+<h2 id="基本概念">基本概念</h2>
+<ul>
+<li>Grid：一次 kernel launch 的全部 blocks。</li>
+<li>Block：一组 threads，同一个 block 内线程可共享资源。</li>
+<li>Thread：执行 kernel 的最小逻辑单位。</li>
+<li>Warp：SIMT 执行单位，课件默认 32 threads。</li>
+<li>SM：Streaming Multiprocessor，GPU 的主要计算单元。</li>
+<li>SIMT：Single Instruction Multiple Threads，同一 warp
+内共享指令流，但各 thread 有自己的数据；可近似把一个 warp
+看成执行上的整体，同一时刻不能真正同时执行两条不同分支，所以若 warp
+内线程因条件不同走向 <code>if/else</code> 两边，就会发生 divergence，GPU
+需要把两条路径分开执行。</li>
+</ul>
+<p>常用内建变量：</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>变量</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>blockIdx.x/y/z</code></td>
+<td>当前 block 在 grid 中的位置</td>
+</tr>
+<tr>
+<td><code>threadIdx.x/y/z</code></td>
+<td>当前 thread 在 block 中的位置</td>
+</tr>
+<tr>
+<td><code>blockDim.x/y/z</code></td>
+<td>每个 block 的 thread 维度（ block 大小）</td>
+</tr>
+<tr>
+<td><code>gridDim.x/y/z</code></td>
+<td>grid 的 block 维度（ grid 内 block 数量，gridDim.x = ⌈ width /
+blockDim.x⌉）</td>
+</tr>
+</tbody>
+</table>
+<p><code>blockDim</code> 和 <code>gridDim</code> 来自 launch
+configuration：</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>kernel<span class="op">&lt;&lt;&lt;</span>gridDim<span class="op">,</span> blockDim<span class="op">&gt;&gt;&gt;(...);</span></span></code></pre></div>
+<p>如果写成一维：</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>kernel<span class="op">&lt;&lt;&lt;</span>N<span class="op">,</span> T<span class="op">&gt;&gt;&gt;(...);</span></span></code></pre></div>
+<p>等价于：</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>gridDim  <span class="op">=</span> dim3<span class="op">(</span>N<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>blockDim <span class="op">=</span> dim3<span class="op">(</span>T<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span></code></pre></div>
+<p>所以没显式写的 <code>.y/.z</code> 默认是 <code>1</code>。</p>
+<h2 id="必背公式">必背公式</h2>
+<p>一维全局索引：</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> idx <span class="op">=</span> blockIdx<span class="op">.</span>x <span class="op">*</span> blockDim<span class="op">.</span>x <span class="op">+</span> threadIdx<span class="op">.</span>x<span class="op">;</span></span></code></pre></div>
+<p>理解：先跳过前面完整 blocks，再加当前 block 内偏移。</p>
+<p>三维坐标：</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> x <span class="op">=</span> blockIdx<span class="op">.</span>x <span class="op">*</span> blockDim<span class="op">.</span>x <span class="op">+</span> threadIdx<span class="op">.</span>x<span class="op">;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> y <span class="op">=</span> blockIdx<span class="op">.</span>y <span class="op">*</span> blockDim<span class="op">.</span>y <span class="op">+</span> threadIdx<span class="op">.</span>y<span class="op">;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> z <span class="op">=</span> blockIdx<span class="op">.</span>z <span class="op">*</span> blockDim<span class="op">.</span>z <span class="op">+</span> threadIdx<span class="op">.</span>z<span class="op">;</span></span></code></pre></div>
+<p>三维线性化：</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> idx <span class="op">=</span> z <span class="op">*</span> <span class="op">(</span>width <span class="op">*</span> height<span class="op">)</span> <span class="op">+</span> y <span class="op">*</span> width <span class="op">+</span> x<span class="op">;</span></span></code></pre></div>
+<p>grid 向上取整：</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>dim3 gridDim<span class="op">((</span>width  <span class="op">+</span> blockDim<span class="op">.</span>x <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> blockDim<span class="op">.</span>x<span class="op">,</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>             <span class="op">(</span>height <span class="op">+</span> blockDim<span class="op">.</span>y <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> blockDim<span class="op">.</span>y<span class="op">,</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>             <span class="op">(</span>depth  <span class="op">+</span> blockDim<span class="op">.</span>z <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> blockDim<span class="op">.</span>z<span class="op">);</span></span></code></pre></div>
+<p>一维简写：</p>
+<pre class="text"><code>numBlocks = (n + threadsPerBlock - 1) / threadsPerBlock</code></pre>
+<p>意义：grid 至少覆盖全部数据；多出来的 threads 用 bounds check
+挡掉。</p>
+<h2 id="题型模板">题型模板</h2>
+<h3 id="线程总数-有效线程">1. 线程总数 / 有效线程</h3>
+<p>来源：<code>EXE/gpu_exe.pdf</code> 第 1 题</p>
+<p>题面：</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>kernel<span class="op">&lt;&lt;&lt;</span>numBlocks<span class="op">,</span> threadsPerBlock<span class="op">&gt;&gt;&gt;(...);</span></span></code></pre></div>
+<p>模板：</p>
+<pre class="text"><code>总线程数 = numBlocks * threadsPerBlock
+有效线程数 = 满足 idx &lt; n 的线程数，通常是 n
+无效线程数 = 总线程数 - 有效线程数</code></pre>
+<p>例：<code>&lt;&lt;&lt;16, 64&gt;&gt;&gt;</code>,
+<code>n = 1000</code></p>
+<pre class="text"><code>总线程数 = 16 * 64 = 1024
+有效线程 = idx 0..999，共 1000
+无效线程 = 24</code></pre>
+<p>开卷提示：先看 launch 创建多少 thread，再看
+<code>if (idx &lt; n)</code> 过滤多少 thread。</p>
+<h3 id="某个-thread-的-global-index">2. 某个 thread 的 global index</h3>
+<p>来源：<code>EXE/gpu_exe.pdf</code> 第 2 题</p>
+<p>题面常给 <code>blockIdx.x = 5</code>, <code>threadIdx.x = 17</code>,
+<code>blockDim.x = 64</code>。</p>
+<pre class="text"><code>idx = blockIdx.x * blockDim.x + threadIdx.x
+idx = 5 * 64 + 17 = 337</code></pre>
+<p>人话：第 5 个 block 前面有 5 整块，每块 64 个；进到当前 block
+后再偏移 17。</p>
+<h3 id="最后一个-block-哪些线程无效">3. 最后一个 block 哪些线程无效</h3>
+<p>来源：<code>EXE/gpu_exe.pdf</code> 第 3 题</p>
+<p>例：<code>&lt;&lt;&lt;16,64&gt;&gt;&gt;</code>,
+<code>n = 1000</code></p>
+<p>最后一个 block：</p>
+<pre class="text"><code>blockIdx.x = 15
+idx = 15 * 64 + threadIdx.x = 960 + threadIdx.x</code></pre>
+<p>有效条件：</p>
+<pre class="text"><code>960 + threadIdx.x &lt; 1000
+threadIdx.x &lt; 40</code></pre>
+<p>结论：</p>
+<pre class="text"><code>有效：threadIdx.x = 0..39
+无效：threadIdx.x = 40..63</code></pre>
+<p>开卷提示：所有 threads 都被创建了；无效只是没通过 bounds check。</p>
+<h3 id="warp-divergence">4. Warp divergence</h3>
+<p>来源：<code>EXE/gpu_exe.pdf</code> 第 4 题、第 5 题</p>
+<p>只在同一个 warp 内讨论。warp size 默认 32。</p>
+<p>判断顺序：</p>
+<ol type="1">
+<li>写出该 warp 覆盖的 <code>idx</code> 范围。</li>
+<li>先过外层 bounds check，例如 <code>idx &lt; n</code>。</li>
+<li>再看内层分支，例如 <code>idx % 2 == 0</code>。</li>
+<li>分别数每条分支 active lanes。</li>
+</ol>
+<p>例 1：第一个 warp 覆盖 <code>idx = 0..31</code>。</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>idx <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span></code></pre></div>
+<p>结论：偶数 16 lanes，奇数 16 lanes，发生 divergence。</p>
+<p>例 2：最后 block 第二个 warp，<code>idx = 992..1023</code>,
+<code>n = 1000</code>。</p>
+<pre class="text"><code>先过 idx &lt; 1000：只有 992..999 共 8 lanes active
+偶数：992, 994, 996, 998，共 4
+奇数：993, 995, 997, 999，共 4
+其余 24 lanes 被 bounds check 挡掉</code></pre>
+<p>易错点：不要一看到 <code>% 2</code> 就说 16/16；最后一个 warp
+可能只有部分 lanes alive。</p>
+<h3 id="cuda-改-cpu-单线程">5. CUDA 改 CPU 单线程</h3>
+<p>来源：<code>EXE/gpu_exe.pdf</code> 第 6 题</p>
+<p>CUDA 的意思：每个 GPU thread 处理一个 <code>idx</code>。</p>
+<p>CPU 改写：用 for 循环让一个线程依次处理所有 <code>idx</code>。</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> f_cpu<span class="op">(</span><span class="dt">float</span> <span class="op">*</span>x<span class="op">,</span> <span class="dt">float</span> <span class="op">*</span>y<span class="op">,</span> <span class="dt">float</span> <span class="op">*</span>out<span class="op">,</span> <span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> idx <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> idx <span class="op">&lt;</span> n<span class="op">;</span> idx<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>        <span class="dt">float</span> v <span class="op">=</span> x<span class="op">[</span>idx<span class="op">]</span> <span class="op">+</span> y<span class="op">[</span>idx<span class="op">];</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>idx <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>            out<span class="op">[</span>idx<span class="op">]</span> <span class="op">=</span> <span class="fl">2.0</span><span class="bu">f</span> <span class="op">*</span> v<span class="op">;</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>            out<span class="op">[</span>idx<span class="op">]</span> <span class="op">=</span> v <span class="op">+</span> <span class="fl">1.0</span><span class="bu">f</span><span class="op">;</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>开卷提示：不要机械翻译 CUDA 语法；核心是“一个 GPU thread = CPU
+循环一次迭代”。</p>
+<h3 id="bandwidth-bound-compute-bound">6. Bandwidth-bound /
+compute-bound</h3>
+<p>来源：<code>EXE/gpu_exe.pdf</code> 第 7 题</p>
+<p>操作强度：</p>
+<pre class="text"><code>OI = FLOPs / bytes</code></pre>
+<p>常见例子：</p>
+<pre class="text"><code>读 x[idx]：4 bytes
+读 y[idx]：4 bytes
+写 out[idx]：4 bytes
+总计：12 bytes
+计算：约 2 FLOPs
+OI = 2 / 12 = 1/6 FLOPs/byte</code></pre>
+<p>判断句：</p>
+<blockquote>
+<p>读写很多字节，但每个元素只做很少计算，所以通常是
+bandwidth-bound，不是 compute-bound。</p>
+</blockquote>
+<h3 id="cuda-程序流程填空">7. CUDA 程序流程填空</h3>
+<p>来源：课件套路题；可与 <code>courseware/review.pdf</code>
+一起看（不对应当前已标注 EXE 单题）</p>
+<p>标准顺序：</p>
+<ol type="1">
+<li>CPU 端准备 host data。</li>
+<li><code>cudaMalloc</code> 分配 device memory。</li>
+<li><code>cudaMemcpy(..., cudaMemcpyHostToDevice)</code> 拷到 GPU。</li>
+<li>设置 <code>blockDim</code> 和 <code>gridDim</code>。</li>
+<li><code>kernel&lt;&lt;&lt;gridDim, blockDim&gt;&gt;&gt;(...)</code>
+启动 kernel。</li>
+<li><code>cudaDeviceSynchronize()</code> 等待完成。</li>
+<li><code>cudaMemcpy(..., cudaMemcpyDeviceToHost)</code> 拷回 CPU。</li>
+<li><code>cudaFree</code> 释放 device memory。</li>
+</ol>
+<h2 id="exe23d-题速解">EXE2：3D 题速解</h2>
+<p>来源：<code>EXE/EXE2.pdf</code> Problem 1 第 1 问、第 2 问、第 3
+问、第 4 问</p>
+<p>3D 题不要被 <code>x/y/z</code> 吓住，本质仍然是：</p>
+<blockquote>
+<p>一个 thread 负责一个元素，只是这个元素先用三维坐标
+<code>(x, y, z)</code> 表示。</p>
+</blockquote>
+<p>解题流程：</p>
+<ol type="1">
+<li>用 <code>blockIdx * blockDim + threadIdx</code> 分别算
+<code>x/y/z</code>。</li>
+<li>用 bounds check 判断坐标是否合法。</li>
+<li>如果数组是一维存储，再线性化为 <code>idx</code>。</li>
+</ol>
+<p>典型 bounds check：</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>x <span class="op">&lt;</span> width <span class="op">&amp;&amp;</span> y <span class="op">&lt;</span> height <span class="op">&amp;&amp;</span> z <span class="op">&lt;</span> depth<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>含义：当前 thread 对应的空间坐标必须真的存在。</p>
+<p>向上取整的原因：</p>
+<pre class="text"><code>gridDim.x = ceil(width / blockDim.x)
+gridDim.y = ceil(height / blockDim.y)
+gridDim.z = ceil(depth / blockDim.z)</code></pre>
+<p>C/CUDA 写法：</p>
+<pre class="text"><code>(size + block - 1) / block</code></pre>
+<p>人话：grid 的任务是把数据“包住”；边缘多出来的 threads 靠 bounds check
+不工作。</p>
+<h2 id="考场检查清单">考场检查清单</h2>
+<p>看到 GPU 题，按这个顺序扫：</p>
+<ol type="1">
+<li>一个 thread 负责什么？<code>idx</code> 还是
+<code>(x,y,z)</code>？</li>
+<li><code>idx</code> / <code>(x,y,z)</code> 怎么由
+<code>blockIdx/threadIdx/blockDim</code> 算？</li>
+<li>launch 一共创建多少 threads / blocks？</li>
+<li>哪个 <code>if</code> 在过滤无效 thread？</li>
+<li>问 divergence 时：先 bounds check，再数分支。</li>
+<li>问 3D 时：分别检查 x/y/z 是否越界。</li>
+<li>没写 <code>.y/.z</code> 时，默认是 <code>1</code>。</li>
+</ol>
+<h2 id="高频术语">高频术语</h2>
+<ul>
+<li>GPU: Graphics Processing Unit，图形处理器。</li>
+<li>GPGPU: General Purpose GPU，通用 GPU 计算。</li>
+<li>SM: Streaming Multiprocessor，流式多处理器。</li>
+<li>SIMT: Single Instruction Multiple Threads，单指令多线程。</li>
+<li>Warp: 一组 SIMT 执行线程，默认 32 threads。</li>
+<li>Kernel: GPU 上执行的函数。</li>
+<li>Grid / Block / Thread: CUDA 线程层次。</li>
+<li>Device memory: GPU 内存。</li>
+<li>Host memory: CPU 侧内存。</li>
+<li>Thread divergence: 分支发散。</li>
+<li>Memory bandwidth: 内存带宽。</li>
+<li>Operational intensity: 操作强度，FLOPs per byte。</li>
+</ul>
+</body>
+</html>
