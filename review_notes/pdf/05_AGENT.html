@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>05 Agent 开卷速查</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">05 Agent 开卷速查</h1>
+</header>
+<h1 id="agent-开卷速查">05 Agent 开卷速查</h1>
+<h2 id="考场定位">考场定位</h2>
+<p>本章按“<strong>AgentLab 涉及的 Agent 概念为主，补充 Agent
+基本概念</strong>”准备。不要背工程命令，重点会解释：</p>
+<pre class="text"><code>为什么 Agent = LLM + Harness？
+为什么要 loop / tools / memory / skill / trace / subagent？
+AgentLab 的设计分别对应哪些 Agent 概念？</code></pre>
+<h2 id="考场小目录">考场小目录</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>题目</th>
+<th>直接看</th>
+<th>必写词</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AgentLab 说明了什么</td>
+<td><a href="#1-agentlab-概念总表">1. AgentLab 概念总表</a></td>
+<td>LLM + Harness，JSON loop，tools，memory，skill，trace</td>
+</tr>
+<tr>
+<td>Agent 是什么</td>
+<td><a href="#2-agent-基本定义">2. Agent 基本定义</a></td>
+<td><code>Agent = LLM + Harness</code></td>
+</tr>
+<tr>
+<td>Agent loop</td>
+<td><a href="#3-agent-loop--react">3. Agent Loop / ReAct</a></td>
+<td>perceive/think/act/observe，reason + act</td>
+</tr>
+<tr>
+<td>tool calling</td>
+<td><a href="#4-tools--function-calling">4. Tools / Function
+Calling</a></td>
+<td>intent，protocol，permission，observation</td>
+</tr>
+<tr>
+<td>JSON 协议</td>
+<td><a href="#5-protocol--结构化输出">5. Protocol / 结构化输出</a></td>
+<td><code>tool_call</code>，<code>final</code>，<code>parse_error</code></td>
+</tr>
+<tr>
+<td>memory</td>
+<td><a href="#6-memory">6. Memory</a></td>
+<td>context compact，persistent memory，retrieval</td>
+</tr>
+<tr>
+<td>skill</td>
+<td><a href="#7-skill--经验库">7. Skill / 经验库</a></td>
+<td>摘要进 prompt，正文按需加载</td>
+</tr>
+<tr>
+<td>subagent / multi-agent</td>
+<td><a href="#8-subagent--multi-agent">8. Subagent /
+Multi-Agent</a></td>
+<td>delegation，分工，并行，校验</td>
+</tr>
+<tr>
+<td>trace / evaluation</td>
+<td><a href="#9-trace--可观测性">9. Trace / 可观测性</a></td>
+<td>llm_response，tool_call，final</td>
+</tr>
+<tr>
+<td>可靠性</td>
+<td><a href="#10-可靠性问题">10. 可靠性问题</a></td>
+<td>hallucination，parse error，stale memory</td>
+</tr>
+<tr>
+<td>简答模板</td>
+<td><a href="#11-简答模板">11. 简答模板</a></td>
+<td>直接套句</td>
+</tr>
+</tbody>
+</table>
+<p>来源优先级：<code>ICS-AgentLab.pptx</code> /
+<code>AgentLab/README.md</code> &gt; <code>2-16-agent_*.pdf</code> &gt;
+<code>review.pdf</code> &gt; ReAct / Toolformer / Voyager /
+Reflexion</p>
+<h2 id="agentlab-概念总表">1. AgentLab 概念总表</h2>
+<p>AgentLab 不是单纯项目说明，它把 Agent 的核心概念具体化：</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>AgentLab 设计</th>
+<th>对应 Agent 概念</th>
+<th>考场解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>普通 Chat Completion</td>
+<td>LLM 只负责推理/生成</td>
+<td>不依赖 SDK 自带 agent 能力</td>
+</tr>
+<tr>
+<td>禁用 native tool calling</td>
+<td>harness 自己控制工具协议</td>
+<td>说明 Agent 不是 API 魔法，而是协议 + 调度</td>
+</tr>
+<tr>
+<td>手写 JSON：<code>tool_call</code> / <code>final</code></td>
+<td>structured action protocol</td>
+<td>LLM 输出行动意图，harness 解析执行</td>
+</tr>
+<tr>
+<td><code>Agent.run_turn(...)</code> 多轮循环</td>
+<td>agent loop / ReAct</td>
+<td>每轮 LLM -&gt; action -&gt; observation</td>
+</tr>
+<tr>
+<td><code>read_file/write_file/edit_file/list_files/bash</code></td>
+<td>tool use</td>
+<td>让 Agent 能访问和改变外部环境</td>
+</tr>
+<tr>
+<td>workspace 限制</td>
+<td>permission / safety</td>
+<td>工具执行必须有边界</td>
+</tr>
+<tr>
+<td><code>load_skill</code></td>
+<td>skill on-demand loading</td>
+<td>流程说明不全塞 prompt，需要时再读</td>
+</tr>
+<tr>
+<td><code>save_memory/read_memory</code></td>
+<td>persistent memory / retrieval</td>
+<td>跨 session 保存和读取稳定事实</td>
+</tr>
+<tr>
+<td>context compact</td>
+<td>short-term context management</td>
+<td>当前对话太长时压缩，不等于长期记忆</td>
+</tr>
+<tr>
+<td><code>ask_subagent</code></td>
+<td>delegation / multi-agent</td>
+<td>把边界清晰的小任务交给子 agent</td>
+</tr>
+<tr>
+<td>trace</td>
+<td>observability / evaluation</td>
+<td>不只看最终答案，还看过程</td>
+</tr>
+<tr>
+<td>token efficiency</td>
+<td>context / prompt management</td>
+<td>长任务中要控制 token 和工具次数</td>
+</tr>
+</tbody>
+</table>
+<p>一句话总括：</p>
+<blockquote>
+<p>AgentLab 考察的是 Agent 的 harness：用普通 LLM
+加上手写协议、工具、memory、skill、subagent 和
+trace，形成可控的任务执行循环。</p>
+</blockquote>
+<h2 id="agent-基本定义">2. Agent 基本定义</h2>
+<pre class="text"><code>Agent = LLM + Harness</code></pre>
+<ul>
+<li><code>LLM</code>：理解任务、推理、规划、决定下一步。</li>
+<li><code>Harness</code>：上下文、工具、权限、记忆、执行、日志、错误恢复。</li>
+<li><code>Goal</code>：围绕目标持续推进，不是一次性聊天。</li>
+<li><code>Loop</code>：感知 -&gt; 推理 -&gt; 行动 -&gt; 观察 -&gt;
+再循环。</li>
+</ul>
+<p>为什么不能只有 LLM：</p>
+<blockquote>
+<p>LLM
+只能产生文本/行动意图；真正完成任务还需要工具、状态、权限、执行和反馈闭环，这些都属于
+harness。</p>
+</blockquote>
+<p>五个展开点：</p>
+<table>
+<thead>
+<tr>
+<th>点</th>
+<th>写什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>工具</td>
+<td>读文件、shell、API、数据库</td>
+</tr>
+<tr>
+<td>状态</td>
+<td>历史消息、中间结果、失败重试</td>
+</tr>
+<tr>
+<td>权限</td>
+<td>workspace 限制、sandbox、越权控制</td>
+</tr>
+<tr>
+<td>执行</td>
+<td>把文本意图变成真实工具/API 调用</td>
+</tr>
+<tr>
+<td>反馈</td>
+<td>把结果回填上下文，进入下一轮推理</td>
+</tr>
+</tbody>
+</table>
+<h2 id="agent-loop-react">3. Agent Loop / ReAct</h2>
+<p>课件四步：</p>
+<pre class="text"><code>Perception -&gt; Cognition -&gt; Action -&gt; Observation</code></pre>
+<p>AgentLab 里的实际形态：</p>
+<pre class="text"><code>LLM response -&gt; parse JSON -&gt; tool_call -&gt; tool result -&gt; append observation -&gt; next LLM response</code></pre>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>步骤</th>
+<th>通用概念</th>
+<th>AgentLab 对应</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Perception</td>
+<td>读输入、规则、memory、环境状态</td>
+<td>user input + system prompt + memory keys + tool results</td>
+</tr>
+<tr>
+<td>Cognition</td>
+<td>分析现状、定计划、决定下一步</td>
+<td>LLM 生成 JSON</td>
+</tr>
+<tr>
+<td>Action</td>
+<td>调工具、写文件、跑命令、委托任务</td>
+<td><code>tool_call</code> / <code>ask_subagent</code></td>
+</tr>
+<tr>
+<td>Observation</td>
+<td>收结果、错误、状态变化</td>
+<td>tool result 写回 messages</td>
+</tr>
+</tbody>
+</table>
+<p>ReAct：</p>
+<pre class="text"><code>Reasoning + Acting interleaving</code></pre>
+<ul>
+<li>reasoning：跟踪目标、更新计划、处理异常。</li>
+<li>action：调用工具/访问环境。</li>
+<li>observation：把外部结果带回下一轮推理。</li>
+</ul>
+<p>考场句：</p>
+<blockquote>
+<p>Agent loop 让 LLM 不只是一次性回答，而是在 observation
+反馈下不断调整行动；ReAct 强调 reasoning 和 acting 交错进行。</p>
+</blockquote>
+<h2 id="tools-function-calling">4. Tools / Function Calling</h2>
+<p>核心链路：</p>
+<pre class="text"><code>LLM 产出 action intent -&gt; Harness 按协议解析 -&gt; Tool 执行 -&gt; Observation 回填</code></pre>
+<p>AgentLab 常见工具：</p>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>概念作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>read_file</code></td>
+<td>获取外部信息</td>
+</tr>
+<tr>
+<td><code>write_file</code></td>
+<td>改变环境 / 产出结果</td>
+</tr>
+<tr>
+<td><code>edit_file</code></td>
+<td>精确修改</td>
+</tr>
+<tr>
+<td><code>list_files</code></td>
+<td>探索环境</td>
+</tr>
+<tr>
+<td><code>bash</code></td>
+<td>执行命令</td>
+</tr>
+<tr>
+<td><code>load_skill</code></td>
+<td>按需加载流程</td>
+</tr>
+<tr>
+<td><code>save_memory</code></td>
+<td>保存长期事实</td>
+</tr>
+<tr>
+<td><code>read_memory</code></td>
+<td>检索长期事实</td>
+</tr>
+<tr>
+<td><code>ask_subagent</code></td>
+<td>委托子任务</td>
+</tr>
+</tbody>
+</table>
+<p>为什么需要工具：</p>
+<ul>
+<li>LLM 内部知识不够、可能过时或不精确。</li>
+<li>文件、命令、API 等外部状态必须实际访问。</li>
+<li>工具结果作为 observation，能降低幻觉。</li>
+<li>Agent 要完成任务，往往需要改变环境，而不仅是说话。</li>
+</ul>
+<p>工具使用四问：</p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>答法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>何时调用</td>
+<td>需要外部信息、精确结果、改变环境</td>
+</tr>
+<tr>
+<td>调哪个</td>
+<td>根据 tool description / schema</td>
+</tr>
+<tr>
+<td>参数怎么传</td>
+<td>按协议输出结构化参数</td>
+</tr>
+<tr>
+<td>结果怎么用</td>
+<td>作为 observation 更新答案或计划</td>
+</tr>
+</tbody>
+</table>
+<h2 id="protocol-结构化输出">5. Protocol / 结构化输出</h2>
+<p>AgentLab 禁用 SDK native tool calling，要求手写 JSON 协议。</p>
+<p>典型格式：</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;tool_call&quot;</span><span class="fu">,</span> <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;read_file&quot;</span><span class="fu">,</span> <span class="dt">&quot;arguments&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;path&quot;</span><span class="fu">:</span> <span class="st">&quot;a.txt&quot;</span><span class="fu">}}</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;final&quot;</span><span class="fu">,</span> <span class="dt">&quot;content&quot;</span><span class="fu">:</span> <span class="st">&quot;answer for the user&quot;</span><span class="fu">}</span></span></code></pre></div>
+<p>为什么需要 protocol：</p>
+<ul>
+<li>让自然语言意图变成可执行动作。</li>
+<li>让 harness 能解析工具名和参数。</li>
+<li>限制 LLM 只能在允许格式内行动。</li>
+<li>方便记录 trace 和做错误恢复。</li>
+</ul>
+<p>常见错误：</p>
+<table>
+<thead>
+<tr>
+<th>错误</th>
+<th>应对</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>输出 Markdown 代码块</td>
+<td>强化“只输出 JSON”，解析时容错</td>
+</tr>
+<tr>
+<td>JSON 不合法</td>
+<td>记录 <code>parse_error</code>，让模型修复</td>
+</tr>
+<tr>
+<td>工具名错</td>
+<td>tool description / registry 保持一致</td>
+</tr>
+<tr>
+<td>参数错</td>
+<td>schema 清楚，错误反馈给模型</td>
+</tr>
+<tr>
+<td>一直不行动</td>
+<td>prompt 要求必要时调用工具</td>
+</tr>
+</tbody>
+</table>
+<p>一句话：</p>
+<blockquote>
+<p>Protocol 是 LLM 和 harness 之间的接口：LLM 输出结构化 action，harness
+负责解析、执行和回填 observation。</p>
+</blockquote>
+<h2 id="memory">6. Memory</h2>
+<p>AgentLab 最容易考的边界：</p>
+<pre class="text"><code>context compact != persistent memory</code></pre>
+<table>
+<thead>
+<tr>
+<th>机制</th>
+<th>负责什么</th>
+<th>不该做什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>context compact</code></td>
+<td>压缩当前 session 旧消息</td>
+<td>不写入长期 memory</td>
+</tr>
+<tr>
+<td><code>persistent memory</code></td>
+<td>跨 session 的稳定事实/偏好</td>
+<td>不保存临时噪声</td>
+</tr>
+<tr>
+<td><code>retrieval</code></td>
+<td>按 key/相关性取记忆</td>
+<td>不要全部塞进 prompt</td>
+</tr>
+</tbody>
+</table>
+<p>为什么 memory 要分层：</p>
+<blockquote>
+<p>context window 容量有限；长期信息不能全部塞进
+prompt，只能按需读取、必要时压缩、旧信息可替换或更新。</p>
+</blockquote>
+<p>Memory 类型：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>short-term memory</td>
+<td>当前任务的计划、中间结果、tool observation</td>
+</tr>
+<tr>
+<td>long-term memory</td>
+<td>用户偏好、项目事实、跨 session 信息</td>
+</tr>
+<tr>
+<td>episodic memory</td>
+<td>做过哪些步骤、遇到什么失败</td>
+</tr>
+<tr>
+<td>procedural memory</td>
+<td>某类任务怎么做，接近 skill</td>
+</tr>
+</tbody>
+</table>
+<p>AgentLab memory 要点：</p>
+<ul>
+<li>system prompt 只放 memory key 列表，不放全部 memory。</li>
+<li>需要长期事实时调用 <code>read_memory</code>。</li>
+<li>用户要求 remember/update/persist 时调用
+<code>save_memory</code>。</li>
+<li>更新后新事实优先。</li>
+<li>没证据就说未知，不编造。</li>
+</ul>
+<h2 id="skill-经验库">7. Skill / 经验库</h2>
+<p>Skill 是可复用流程，不是答案库。</p>
+<p>AgentLab 机制：</p>
+<table>
+<thead>
+<tr>
+<th>设计</th>
+<th>概念</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>skills/&lt;name&gt;/SKILL.md</code></td>
+<td>skill 文档</td>
+</tr>
+<tr>
+<td>front matter <code>name/description</code></td>
+<td>skill 摘要</td>
+</tr>
+<tr>
+<td>system prompt 只放摘要</td>
+<td>减少上下文</td>
+</tr>
+<tr>
+<td><code>load_skill</code> 读取全文</td>
+<td>按需加载</td>
+</tr>
+<tr>
+<td>skill 写 checklist / output requirements</td>
+<td>稳定行动流程</td>
+</tr>
+</tbody>
+</table>
+<p>Skill 和 memory 区别：</p>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>Memory</th>
+<th>Skill</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>保存什么</td>
+<td>事实、偏好、历史经验</td>
+<td>可复用流程、checklist、操作规范</td>
+</tr>
+<tr>
+<td>何时用</td>
+<td>需要某个事实时</td>
+<td>遇到某类任务时</td>
+</tr>
+<tr>
+<td>作用</td>
+<td>记住信息</td>
+<td>指导怎么做</td>
+</tr>
+</tbody>
+</table>
+<p>考场句：</p>
+<blockquote>
+<p>Skill 是按需加载的任务流程。摘要放进 prompt，正文需要时再读，可以减少
+token，并让 Agent 按 checklist 稳定执行。</p>
+</blockquote>
+<h2 id="subagent-multi-agent">8. Subagent / Multi-Agent</h2>
+<p>AgentLab 的 <code>ask_subagent</code> 对应 subagent / multi-agent
+delegation。</p>
+<p>适用场景：</p>
+<ul>
+<li>子任务边界清晰。</li>
+<li>输入输出明确。</li>
+<li>主上下文不想塞太多细节。</li>
+<li>需要分工、并行、复核。</li>
+</ul>
+<p>好处：</p>
+<table>
+<thead>
+<tr>
+<th>好处</th>
+<th>写法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>分工</td>
+<td>不同 agent 负责不同子任务</td>
+</tr>
+<tr>
+<td>并行</td>
+<td>多个子任务同时推进</td>
+</tr>
+<tr>
+<td>通信</td>
+<td>agent 间交换中间结果</td>
+</tr>
+<tr>
+<td>协调</td>
+<td>主 agent 汇总和合并结果</td>
+</tr>
+<tr>
+<td>互查</td>
+<td>一个生成，一个检查</td>
+</tr>
+<tr>
+<td>降低上下文复杂度</td>
+<td>子 agent 只看局部信息</td>
+</tr>
+</tbody>
+</table>
+<p>风险：</p>
+<ul>
+<li>token 成本上升。</li>
+<li>角色不清会互相推诿。</li>
+<li>子 agent 输出错误会污染主 agent。</li>
+<li>需要明确停止条件和输出格式。</li>
+</ul>
+<p>一句话：</p>
+<blockquote>
+<p>Subagent 是把局部任务委托出去，主 agent
+只接收整理后的结果；multi-agent 的关键是分工、通信、协调和校验。</p>
+</blockquote>
+<h2 id="trace-可观测性">9. Trace / 可观测性</h2>
+<p>AgentLab 强调 trace，因为评测不只看最终答案，也看过程。</p>
+<p>至少记录：</p>
+<ul>
+<li><code>llm_response</code></li>
+<li><code>tool_call</code></li>
+<li><code>parse_error</code></li>
+<li><code>context_compacted</code></li>
+<li><code>memory_write</code></li>
+<li><code>memory_retrieve</code></li>
+<li><code>final</code></li>
+</ul>
+<p>Trace 的作用：</p>
+<table>
+<thead>
+<tr>
+<th>作用</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>可观测</td>
+<td>知道 Agent 每一步做了什么</td>
+</tr>
+<tr>
+<td>调试</td>
+<td>定位 JSON、工具、memory、skill 问题</td>
+</tr>
+<tr>
+<td>评测</td>
+<td>证明真的调用工具，不是编造答案</td>
+</tr>
+<tr>
+<td>效率分析</td>
+<td>看 LLM 请求数、工具次数、token、压缩次数</td>
+</tr>
+</tbody>
+</table>
+<p>一句话：</p>
+<blockquote>
+<p>Trace 是 Agent 执行过程的证据链；复杂 Agent 不能只看 final
+answer，还要看中间行为是否正确。</p>
+</blockquote>
+<h2 id="可靠性问题">10. 可靠性问题</h2>
+<p>常见问题和对应概念：</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>问题</th>
+<th>表现</th>
+<th>应对</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hallucination</td>
+<td>编造事实/工具结果</td>
+<td>工具验证，引用 observation</td>
+</tr>
+<tr>
+<td>parse error</td>
+<td>输出不符合 JSON</td>
+<td>固定协议，修复重试</td>
+</tr>
+<tr>
+<td>over-planning</td>
+<td>一直计划不行动</td>
+<td>要求必要时调用工具</td>
+</tr>
+<tr>
+<td>context overload</td>
+<td>上下文太长，忽略重点</td>
+<td>compact，retrieval</td>
+</tr>
+<tr>
+<td>stale memory</td>
+<td>旧记忆覆盖新事实</td>
+<td>更新优先</td>
+</tr>
+<tr>
+<td>tool misuse</td>
+<td>工具名/参数错</td>
+<td>schema 清晰，错误反馈</td>
+</tr>
+<tr>
+<td>infinite loop</td>
+<td>重复失败</td>
+<td>最大步数，reflection，停止条件</td>
+</tr>
+<tr>
+<td>token explosion</td>
+<td>prompt/skill/tool result 太长</td>
+<td>按需加载，压缩，限制输出</td>
+</tr>
+</tbody>
+</table>
+<p>Reflection：</p>
+<blockquote>
+<p>Reflection 是 Agent 根据失败轨迹或冲突 observation
+自我检查、修正计划、更新经验，避免重复同一错误。</p>
+</blockquote>
+<p>Token efficiency：</p>
+<ul>
+<li>prompt 简洁明确。</li>
+<li>skill 正文按需加载。</li>
+<li>tool result 不要过长。</li>
+<li>compact 保留目标、关键 ID、路径、证据、失败尝试、下一步。</li>
+<li>不做无意义多轮解释。</li>
+</ul>
+<h2 id="简答模板">11. 简答模板</h2>
+<h3 id="agentlab-说明了什么">11.1 AgentLab 说明了什么</h3>
+<blockquote>
+<p>AgentLab 说明 Agent 的核心是 <code>LLM + Harness</code>。LLM
+负责推理和生成行动意图，harness 负责 JSON
+协议、工具调度、权限控制、memory、skill、subagent、trace
+和错误恢复。</p>
+</blockquote>
+<h3 id="agent-是什么">11.2 Agent 是什么</h3>
+<blockquote>
+<p>Agent = LLM + Harness。LLM 负责理解、推理和决策，harness
+负责上下文、工具、权限、记忆和执行反馈。它通过
+perception、cognition、action、observation
+的循环围绕目标持续完成任务。</p>
+</blockquote>
+<h3 id="为什么不能只有-llm">11.3 为什么不能只有 LLM</h3>
+<blockquote>
+<p>因为 LLM
+只能产生文本或行动意图，真正完成任务还需要工具执行、资源访问、权限隔离、状态维护、错误恢复和日志追踪，这些由
+harness 负责。</p>
+</blockquote>
+<h3 id="tools-function-calling-1">11.4 tools / function calling</h3>
+<blockquote>
+<p>Tool calling 的关键是受控执行：LLM 产生 action intent，harness
+按协议解析并检查权限，再执行工具并把结果回填为 observation。</p>
+</blockquote>
+<h3 id="为什么要手写-json-协议">11.5 为什么要手写 JSON 协议</h3>
+<blockquote>
+<p>JSON 协议把自然语言意图变成结构化 action，使 harness
+能稳定解析工具名和参数，区分 <code>tool_call</code> 与
+<code>final</code>，并在格式错误时记录 <code>parse_error</code>
+进行恢复。</p>
+</blockquote>
+<h3 id="为什么-memory-要分层">11.6 为什么 memory 要分层</h3>
+<blockquote>
+<p>因为上下文窗口有限，Agent
+不能保留全部历史，只能把重要信息按需加载，对当前上下文压缩/替换，并把稳定事实持久化保存。<code>context compact</code>
+不等于长期 memory。</p>
+</blockquote>
+<h3 id="skill-是什么">11.7 skill 是什么</h3>
+<blockquote>
+<p>Skill 是可按需加载的流程说明或经验库。system prompt
+只放名称和摘要，真正需要时加载正文，以减少 token 并让模型按 checklist
+行动。</p>
+</blockquote>
+<h3 id="trace-有什么用">11.8 trace 有什么用</h3>
+<blockquote>
+<p>Trace 记录
+<code>llm_response</code>、<code>tool_call</code>、<code>parse_error</code>、memory
+操作和 <code>final</code>，用于调试、评测和证明 Agent
+真的按步骤执行，而不是只编造最终答案。</p>
+</blockquote>
+<h3 id="subagent-有什么好处">11.9 subagent 有什么好处</h3>
+<blockquote>
+<p>Subagent
+能把复杂任务拆成边界清晰的子任务，由不同角色并行推进并互相校验，从而降低主上下文复杂度，提高扩展性和鲁棒性。</p>
+</blockquote>
+<h2 id="高频词">12. 高频词</h2>
+<ul>
+<li><code>Agent = LLM + Harness</code></li>
+<li><code>Perception -&gt; Cognition -&gt; Action -&gt; Observation</code></li>
+<li><code>ReAct = reasoning + acting</code></li>
+<li><code>tool_call / final / parse_error</code></li>
+<li><code>protocol / permission / observation / trace</code></li>
+<li><code>context compact != persistent memory</code></li>
+<li><code>read_memory / save_memory / retrieval</code></li>
+<li><code>SkillLoader / load_skill / SKILL.md</code></li>
+<li><code>subagent / ask_subagent</code></li>
+<li><code>reflection / self-correction</code></li>
+<li><code>token efficiency / context compression</code></li>
+</ul>
+<h2 id="考场最后-20-秒">13. 考场最后 20 秒</h2>
+<ol type="1">
+<li>总纲：<code>Agent = LLM + Harness</code></li>
+<li>AgentLab：<code>手写 JSON loop + tools + skills + memory + trace</code></li>
+<li>loop：<code>Perception -&gt; Cognition -&gt; Action -&gt; Observation</code></li>
+<li>tools：<code>intent -&gt; protocol -&gt; execute -&gt; observation</code></li>
+<li>protocol：<code>tool_call / final / parse_error</code></li>
+<li>memory：<code>context compact != persistent memory</code></li>
+<li>skill：<code>摘要进 prompt，正文按需 load</code></li>
+<li>subagent：<code>委托局部任务，主 agent 汇总</code></li>
+</ol>
+</body>
+</html>
