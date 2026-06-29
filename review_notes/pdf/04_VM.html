@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
@@ -286,14 +286,14 @@ PPN bits = PA bits - p</code></pre>
 </blockquote>
 <h2 id="vm-完整链路">VM 完整链路</h2>
 <p>
-<img src="../assets/vm/tlb-hit-p56.png" alt="TLB hit 链路图" width="320">
-<img src="../assets/vm/tlb-miss-p57.png" alt="TLB miss 链路图" width="320">
+<img src="../../assets/vm/tlb-hit-p56.png" alt="TLB hit 链路图" width="320">
+<img src="../../assets/vm/tlb-miss-p57.png" alt="TLB miss 链路图" width="320">
 </p>
 <p>
-<img src="../assets/vm/four-level-page-table-p74.png" alt="4-level page table 链路图" width="650">
+<img src="../../assets/vm/four-level-page-table-p74.png" alt="4-level page table 链路图" width="650">
 </p>
 <p>
-<img src="../assets/vm/core-i7-address-translation-p82.png" alt="Core i7 address translation 链路图" width="650">
+<img src="../../assets/vm/core-i7-address-translation-p82.png" alt="Core i7 address translation 链路图" width="650">
 </p>
 <p>这是做 VM 题时脑子里要先跑一遍的主线：</p>
 <pre class="text"><code>CPU 发出 VA
@@ -560,7 +560,7 @@ because it avoids all syscalls.</p>
 <h3 id="cow">8. COW</h3>
 <p>来源：<code>courseware/2-18-vm-part2_*.pdf</code>。</p>
 <p>
-<img src="../assets/vm/cow-private-object-p38.png" alt="Private copy-on-write object 图" width="480">
+<img src="../../assets/vm/cow-private-object-p38.png" alt="Private copy-on-write object 图" width="480">
 </p>
 <p>Copy-on-Write：</p>
 <ul>
@@ -576,12 +576,12 @@ because it avoids all syscalls.</p>
 <h3 id="clock-algorithm">9. Clock algorithm</h3>
 <p>来源：<code>courseware/2-18-vm-part2_*.pdf</code>；复习课点名。</p>
 <p>
-<img src="../assets/vm/FIFO.png" alt="FIFO page replacement" width="320">
-<img src="../assets/vm/SECOND_CHANCE.png" alt="Second chance page replacement" width="320">
+<img src="../../assets/vm/FIFO.png" alt="FIFO page replacement" width="320">
+<img src="../../assets/vm/SECOND_CHANCE.png" alt="Second chance page replacement" width="320">
 </p>
 <p>
-<img src="../assets/vm/LRU.png" alt="LRU page replacement" width="320">
-<img src="../assets/vm/CLOCK.png" alt="Clock page replacement" width="320">
+<img src="../../assets/vm/LRU.png" alt="LRU page replacement" width="320">
+<img src="../../assets/vm/CLOCK.png" alt="Clock page replacement" width="320">
 </p>
 <p>Clock 是 LRU 的近似：</p>
 <ul>
@@ -690,7 +690,7 @@ coalescing。</li>
 blocks，搜索更快。</p>
 </blockquote>
 <p>
-<img src="../assets/vm/explicit-free-list-p45.png" alt="Explicit free list 图" width="480">
+<img src="../../assets/vm/explicit-free-list-p45.png" alt="Explicit free list 图" width="480">
 </p>
 <ul>
 <li>只把 free blocks 串成链表，分配时不用扫 allocated blocks。</li>
@@ -807,3 +807,4 @@ header、split/coalesce、buddy/slab。</li>
 </ul>
 </body>
 </html>
+
