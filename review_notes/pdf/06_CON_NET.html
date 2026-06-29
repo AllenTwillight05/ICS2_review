@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>06 Concurrency &amp; Network 开卷速查</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">06 Concurrency &amp; Network 开卷速查</h1>
+</header>
+<h1 id="concurrency-network-开卷速查">06 Concurrency &amp; Network
+开卷速查</h1>
+<h2 id="先把整章捡回来">先把整章捡回来</h2>
+<p>这一章可以先用一句话串起来：</p>
+<blockquote>
+<p>一个 client 通过 socket 连到 server；如果 client 在私网里，SNAT
+router 会改 packet 的 source address；server 为了同时服务多个
+client，会用 prethreaded worker pool；master 和 workers 之间用 bounded
+buffer 传 <code>connfd</code>，这个 buffer 必须用 semaphore / lock
+同步。</p>
+</blockquote>
+<p>如果完全忘了网络，先把它想成“两个程序互相发字节流”。</p>
+<p>client 想和 server
+说话，不能只知道“那台机器在哪里”，还要知道“那台机器上哪个程序在听”。所以地址要写成
+<code>IP:port</code>：</p>
+<ul>
+<li><code>IP</code> 找到 host / machine。</li>
+<li><code>port</code> 找到 host 上的某个 service / process。</li>
+<li><code>IP:port</code> 合起来叫 socket address。</li>
+</ul>
+<p>一次 TCP connection 有两端：</p>
+<pre class="text"><code>client endpoint: client_ip:client_port
+server endpoint: server_ip:server_port</code></pre>
+<p>这两个 endpoint 合起来就是 socket pair：</p>
+<pre class="text"><code>(client_ip:client_port, server_ip:server_port)</code></pre>
+<p>对程序来说，socket 看起来像 file descriptor。连接建好后，client 和
+server 都可以对 socket descriptor 做
+<code>read/write</code>，就像读写文件一样。</p>
+<p>建立连接时，两边分工不同：</p>
+<ul>
+<li>client 主动调用 <code>connect</code>，说“我要连这个 server
+address”。</li>
+<li>server 先准备一个 <code>listenfd</code>，绑定自己的
+<code>IP:port</code>，进入 listen 状态。</li>
+<li>server 调 <code>accept(listenfd, ...)</code> 阻塞等连接。</li>
+<li>有 client 连上后，<code>accept</code> 返回一个新的
+<code>connfd</code>。</li>
+<li><code>listenfd</code> 继续负责等下一个 client；<code>connfd</code>
+负责和当前这个 client <code>read/write</code>。</li>
+</ul>
+<p>SNAT 解决的是“私网地址不能直接在公网路由”的问题。比如
+<code>192.168.1.10</code>
+是私有地址，很多宿舍/公司/学校局域网里都可能有同一个
+<code>192.168.1.10</code>，公网 server 无法把它当作全球唯一地址。于是
+router 出门时把 packet 的 source 从 private <code>IP:port</code> 改成
+router 的 public <code>IP:port</code>。server 看到的是 router public
+address，不是内网 client 的 private address。回包时 router 再根据 NAT
+table 改回 private address。</p>
+<p>Concurrency 部分解决的是“server 怎么同时服务多个 client”。最简单的
+server 一次只服务一个 client：如果这个 client 很慢，后面的 client
+全都等着。并发 server 用多个 thread 同时处理多个
+<code>connfd</code>。但如果每来一个连接就创建一个
+thread，开销和数量都不好控制。所以 prethreaded server
+启动时先创建固定数量 worker threads，形成 thread pool。</p>
+<p>prethreaded server 的结构是：</p>
+<pre class="text"><code>master thread:
+    accept connection -&gt; 得到 connfd -&gt; 放进 bounded buffer
+
+worker threads:
+    从 bounded buffer 取 connfd -&gt; echo(connfd) -&gt; close(connfd)</code></pre>
+<p>这里 bounded buffer 是共享数据结构，master 和多个 workers
+会同时访问，所以必须同步：</p>
+<ul>
+<li><code>slots</code> 记录还有多少空位。</li>
+<li><code>items</code> 记录 buffer 里有多少 <code>connfd</code>。</li>
+<li><code>mutex</code> 保护 buffer 的 <code>front/rear/buf</code>
+不被多个 thread 同时改坏。</li>
+</ul>
+<p>lock / semaphore 的核心不是“让程序更快”，而是“让并发 interleaving
+不会把共享状态弄坏”。但同步正确不等于公平：FIFO buffer
+可以保证已经入队的 <code>connfd</code> 按 FIFO 出队，却不保证 semaphore
+按 FIFO 唤醒等待的 worker。</p>
+<p>本章考试大概率不是让你自由发挥系统设计，而是给一个类似
+<code>EXE/concurrent&amp;network.pdf</code> 的综合题，按 Part
+填表、解释、写同步伪代码。</p>
+<h2 id="关键名词解释">关键名词解释</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>名词</th>
+<th>先这样理解</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>host</td>
+<td>一台机器，比如你的电脑、server、router</td>
+</tr>
+<tr>
+<td>client</td>
+<td>主动发起连接的一方</td>
+</tr>
+<tr>
+<td>server</td>
+<td>等别人连接并提供服务的一方</td>
+</tr>
+<tr>
+<td>IP address</td>
+<td>找到一台 host 的网络地址</td>
+</tr>
+<tr>
+<td>port</td>
+<td>host 上某个 service / process 的编号</td>
+</tr>
+<tr>
+<td>socket address</td>
+<td><code>IP:port</code>，比如 <code>202.120.40.85:15213</code></td>
+</tr>
+<tr>
+<td>endpoint</td>
+<td>一条连接的一端，也是一个 socket address</td>
+</tr>
+<tr>
+<td>socket pair</td>
+<td>一条 TCP
+连接的两端：<code>(client_ip:client_port, server_ip:server_port)</code></td>
+</tr>
+<tr>
+<td>socket descriptor</td>
+<td>程序里代表 socket 的整数描述符，可 <code>read/write</code></td>
+</tr>
+<tr>
+<td><code>listenfd</code></td>
+<td>server 用来等待新连接的 listening descriptor</td>
+</tr>
+<tr>
+<td><code>connfd</code></td>
+<td><code>accept</code> 返回的 connected descriptor，用来服务某个
+client</td>
+</tr>
+<tr>
+<td>router</td>
+<td>转发 packet 的网络设备</td>
+</tr>
+<tr>
+<td>private IP</td>
+<td>私网地址，如 <code>192.168.x.x</code>，公网不能直接路由</td>
+</tr>
+<tr>
+<td>public IP</td>
+<td>公网地址，可以在公网路由</td>
+</tr>
+<tr>
+<td>NAT table</td>
+<td>router 维护的 private address 和 public mapping 的表</td>
+</tr>
+<tr>
+<td>SNAT</td>
+<td>Source NAT，出公网时改 source <code>IP:port</code></td>
+</tr>
+<tr>
+<td>thread</td>
+<td>同一进程里的并发执行流</td>
+</tr>
+<tr>
+<td>critical section</td>
+<td>访问共享状态、必须互斥执行的代码</td>
+</tr>
+<tr>
+<td>semaphore</td>
+<td>同步变量；可做资源计数，也可做互斥</td>
+</tr>
+<tr>
+<td>mutex</td>
+<td>互斥锁，只允许一个 thread 进入 critical section</td>
+</tr>
+<tr>
+<td>bounded buffer</td>
+<td>固定大小队列，用来在 producer 和 consumer 间传东西</td>
+</tr>
+<tr>
+<td>producer-consumer</td>
+<td>一个放东西，一个取东西；本题 master 放 <code>connfd</code>，workers
+取 <code>connfd</code></td>
+</tr>
+<tr>
+<td>prethreaded server</td>
+<td>启动时预先创建 worker pool 的并发 server</td>
+</tr>
+</tbody>
+</table>
+<h2 id="一分钟速查">一分钟速查</h2>
+<p>CON&amp;NET 题的核心不是 signal，也不是 system-level
+I/O。复习课明确说 signal 期末完全不考，system-level I/O
+大概率不考。真正要准备的是：socket API、SNAT、bounded buffer /
+semaphore、prethreaded server、lock 基本语义。</p>
+<p>来源优先级：</p>
+<ul>
+<li><code>EXE/concurrent&amp;network.pdf</code>：最核心样题，SNAT and
+Prethreaded Server。</li>
+<li><code>EXE/concurrent&amp;network_sol.pdf</code>：对应答案。</li>
+<li><code>courseware/2-20-network_*.pdf</code>：network / socket / SNAT
+基础。</li>
+<li><code>courseware/2-21-con_*.pdf</code>、<code>2-22-sync_*.pdf</code>：thread
+/ semaphore / bounded buffer。</li>
+<li><code>courseware/2-23-locks_*.pdf</code>：lock、fairness、starvation。</li>
+<li><code>courseware/2-24-cv_*.pdf</code>：condition
+variable，只作背景。</li>
+</ul>
+<p>题型对应来源：</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>题型</th>
+<th>主要来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>connect / bind / listen / accept</code>、<code>listenfd</code>
+vs <code>connfd</code></td>
+<td><code>EXE/concurrent&amp;network.pdf</code> Part 1</td>
+</tr>
+<tr>
+<td>SNAT 地址转换表、server 为什么看不到 private IP</td>
+<td><code>EXE/concurrent&amp;network.pdf</code> Part 2</td>
+</tr>
+<tr>
+<td>bounded buffer、semaphore 初值、P/V 顺序、deadlock 解释</td>
+<td><code>EXE/concurrent&amp;network.pdf</code> Part 3</td>
+</tr>
+<tr>
+<td>prethreaded server 相比 iterative / thread-per-connection
+的优势</td>
+<td><code>EXE/concurrent&amp;network.pdf</code> Part 4</td>
+</tr>
+<tr>
+<td>worker 数量 <code>N</code>、buffer 大小 <code>B</code>、CPU-bound vs
+I/O-bound</td>
+<td><code>EXE/concurrent&amp;network.pdf</code> Part 5</td>
+</tr>
+<tr>
+<td>FIFO buffer、公平性、starvation、semaphore wakeup 是否 FIFO</td>
+<td><code>EXE/concurrent&amp;network.pdf</code> Part 6</td>
+</tr>
+<tr>
+<td>TAS / ticket lock / sleep while holding lock</td>
+<td><code>courseware/2-23-locks_*.pdf</code></td>
+</tr>
+</tbody>
+</table>
+<p>核心句：</p>
+<blockquote>
+<p>这题基本就是“网络连接怎么建立 + NAT 地址怎么改 +
+多线程服务器如何安全地把 <code>connfd</code> 分发给 worker”。</p>
+</blockquote>
+<h2 id="part-1socket-api">Part 1：Socket API</h2>
+<p>来源：<code>EXE/concurrent&amp;network.pdf</code> Part 1。</p>
+<h3 id="connect"><code>connect</code></h3>
+<p>客户端调用：</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>connect<span class="op">(</span>clientfd<span class="op">,</span> server_addr<span class="op">,</span> server_addrlen<span class="op">)</span></span></code></pre></div>
+<p>作用：请求内核和 server socket address 建立 TCP
+connection。成功后，<code>clientfd</code> 成为客户端连接端点，可以用普通
+Unix I/O 读写。</p>
+<h3 id="bind"><code>bind</code></h3>
+<p>服务器调用：</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>bind<span class="op">(</span>listenfd<span class="op">,</span> server_addr<span class="op">,</span> server_addrlen<span class="op">)</span></span></code></pre></div>
+<p>作用：把 socket descriptor 绑定到本地 <code>IP:port</code>。</p>
+<h3 id="listen"><code>listen</code></h3>
+<p>服务器调用：</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>listen<span class="op">(</span>listenfd<span class="op">,</span> LISTENQ<span class="op">)</span></span></code></pre></div>
+<p>作用：把 bound socket 变成 listening socket，用来接收 connection
+requests。<code>LISTENQ</code> 是内核等待队列长度提示。</p>
+<h3 id="accept"><code>accept</code></h3>
+<p>服务器调用：</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>accept<span class="op">(</span>listenfd<span class="op">,</span> client_addr<span class="op">,</span> client_len<span class="op">)</span></span></code></pre></div>
+<p>作用：阻塞等待连接请求；连接建立后返回新的 connected descriptor。</p>
+<h3 id="listenfd-vs-connfd"><code>listenfd</code> vs
+<code>connfd</code></h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>描述符</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>listenfd</code></td>
+<td>监听描述符，长期存在，只负责接收未来连接</td>
+</tr>
+<tr>
+<td><code>connfd</code></td>
+<td>已连接描述符，每个 client connection 一个，用来
+<code>read/write</code>，服务结束后关闭</td>
+</tr>
+</tbody>
+</table>
+<p>开卷提示：</p>
+<blockquote>
+<p><code>accept</code> 不会用 <code>listenfd</code> 直接和 client
+通信，而是返回新的 <code>connfd</code>。</p>
+</blockquote>
+<p>练习题里 SNAT 后 server 看到的 socket pair：</p>
+<pre class="text"><code>(202.120.40.82:233, 202.120.40.85:15213)</code></pre>
+<p>client 自己以为的 socket pair：</p>
+<pre class="text"><code>(192.168.1.10:10086, 202.120.40.85:15213)</code></pre>
+<p>差别来自 SNAT router 改写 source address。</p>
+<h2 id="part-2snat">Part 2：SNAT</h2>
+<p>来源：<code>EXE/concurrent&amp;network.pdf</code> Part 2。</p>
+<p>SNAT: Source Network Address Translation。路由器把内网 client 的
+source <code>IP:port</code> 改成路由器自己的公网
+<code>IP:port</code>，并维护 NAT mapping。</p>
+<p>练习题原设定：</p>
+<pre class="text"><code>Client private:      192.168.1.10:10086
+SNAT public mapping: 192.168.1.10:10086 &lt;-&gt; 202.120.40.82:233
+Server:              202.120.40.85:15213</code></pre>
+<p>四步填表：</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>阶段</th>
+<th>src</th>
+<th>dst</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Client -&gt; Router, before SNAT</td>
+<td><code>192.168.1.10:10086</code></td>
+<td><code>202.120.40.85:15213</code></td>
+</tr>
+<tr>
+<td>Router -&gt; Server, after SNAT</td>
+<td><code>202.120.40.82:233</code></td>
+<td><code>202.120.40.85:15213</code></td>
+</tr>
+<tr>
+<td>Server -&gt; Router, before reverse translation</td>
+<td><code>202.120.40.85:15213</code></td>
+<td><code>202.120.40.82:233</code></td>
+</tr>
+<tr>
+<td>Router -&gt; Client, after reverse translation</td>
+<td><code>202.120.40.85:15213</code></td>
+<td><code>192.168.1.10:10086</code></td>
+</tr>
+</tbody>
+</table>
+<p>NAT table entry：</p>
+<pre class="text"><code>192.168.1.10:10086 &lt;-&gt; 202.120.40.82:233</code></pre>
+<p>为什么 server 看不到 <code>192.168.1.10:10086</code>？</p>
+<blockquote>
+<p><code>192.168.x.x</code> 是 private
+IP，不是公网全局唯一地址，不能在公网直接路由。SNAT router 用自己的公网
+<code>IP:port</code> 替换 outgoing packet 的 source address，所以 server
+看到的是 router public address。server 回包给 router public
+address，router 再查 NAT table，把 destination 改回 private
+address。</p>
+</blockquote>
+<p>答题模板：</p>
+<blockquote>
+<p>On the outgoing path, SNAT rewrites the private source socket address
+to the router’s public socket address. On the return path, the router
+uses the NAT table to rewrite the destination back to the private
+client.</p>
+</blockquote>
+<h2 id="part-3bounded-buffer-synchronization">Part 3：Bounded Buffer
+Synchronization</h2>
+<p>来源：<code>EXE/concurrent&amp;network.pdf</code> Part 3。</p>
+<p>场景：</p>
+<ul>
+<li>master thread 调 <code>accept()</code> 得到
+<code>connfd</code>。</li>
+<li>master 把 <code>connfd</code> 插入 bounded buffer。</li>
+<li>worker threads 从 buffer 取 <code>connfd</code>，调用
+<code>echo(connfd)</code>，然后 <code>close(connfd)</code>。</li>
+</ul>
+<p>先别看代码，先看人话版：</p>
+<pre class="text"><code>buffer 是一个固定大小队列，里面放 connfd。
+
+master:
+    我 accept 到一个新连接 connfd
+    如果队列没满，我就把 connfd 放进去
+    如果队列满了，我就等 worker 取走一些
+
+worker:
+    如果队列里有 connfd，我就取一个出来服务
+    如果队列空了，我就等 master 放新的</code></pre>
+<p>为什么要同步？</p>
+<ul>
+<li>多个 worker 可能同时取；master 也可能同时放。</li>
+<li>如果大家一起改 <code>front/rear/buf</code>，队列会被改坏。</li>
+<li>所以改队列时要用 <code>mutex</code> 锁住。</li>
+<li>但只用 <code>mutex</code>
+不够，还要知道“有没有空位”和“有没有东西可取”，这就是
+<code>slots/items</code>。</li>
+</ul>
+<p>这是 producer-consumer：</p>
+<table>
+<thead>
+<tr>
+<th>角色</th>
+<th>行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>master</td>
+<td>producer，产生 <code>connfd</code></td>
+</tr>
+<tr>
+<td>worker</td>
+<td>consumer，消费 <code>connfd</code></td>
+</tr>
+<tr>
+<td>bounded buffer</td>
+<td>master 和 workers 之间的 descriptor queue</td>
+</tr>
+</tbody>
+</table>
+<p>需要三个同步量：</p>
+<table>
+<thead>
+<tr>
+<th>semaphore</th>
+<th style="text-align: right;">初值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mutex</code></td>
+<td style="text-align: right;">1</td>
+<td>binary semaphore，保护 buffer 元数据</td>
+</tr>
+<tr>
+<td><code>slots</code></td>
+<td style="text-align: right;"><code>n</code></td>
+<td>counting semaphore，空槽数量</td>
+</tr>
+<tr>
+<td><code>items</code></td>
+<td style="text-align: right;">0</td>
+<td>counting semaphore，已有 descriptor 数量</td>
+</tr>
+</tbody>
+</table>
+<p>CSAPP 风格 <code>sbuf_t</code> 骨架：</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> <span class="op">{</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> <span class="op">*</span>buf<span class="op">;</span>        <span class="co">/* 存 connfd 的数组 */</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> n<span class="op">;</span>           <span class="co">/* buffer 容量 */</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> front<span class="op">;</span>       <span class="co">/* remove 时移动；下标用 % n 循环 */</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> rear<span class="op">;</span>        <span class="co">/* insert 时移动；下标用 % n 循环 */</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    sem_t mutex<span class="op">;</span>     <span class="co">/* 锁 front/rear/buf，一次只让一个 thread 改队列 */</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    sem_t slots<span class="op">;</span>     <span class="co">/* 空位数；0 表示 master 不能 insert */</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    sem_t items<span class="op">;</span>     <span class="co">/* 可取 connfd 数；0 表示 worker 不能 remove */</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> sbuf_t<span class="op">;</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> sbuf_init<span class="op">(</span>sbuf_t <span class="op">*</span>sp<span class="op">,</span> <span class="dt">int</span> n<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    sp<span class="op">-&gt;</span>buf <span class="op">=</span> Calloc<span class="op">(</span>n<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">));</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    sp<span class="op">-&gt;</span>n <span class="op">=</span> n<span class="op">;</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    sp<span class="op">-&gt;</span>front <span class="op">=</span> sp<span class="op">-&gt;</span>rear <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>          <span class="co">/* 初始队列为空 */</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    Sem_init<span class="op">(&amp;</span>sp<span class="op">-&gt;</span>mutex<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">1</span><span class="op">);</span>        <span class="co">/* 锁初始可用 */</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    Sem_init<span class="op">(&amp;</span>sp<span class="op">-&gt;</span>slots<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> n<span class="op">);</span>        <span class="co">/* 一开始 n 个空位 */</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    Sem_init<span class="op">(&amp;</span>sp<span class="op">-&gt;</span>items<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">);</span>        <span class="co">/* 一开始 0 个 item */</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>插入：</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> sbuf_insert<span class="op">(</span>sbuf_t <span class="op">*</span>sp<span class="op">,</span> <span class="dt">int</span> item<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    P<span class="op">(&amp;</span>sp<span class="op">-&gt;</span>slots<span class="op">);</span>                      <span class="co">/* 要一个空位；满了就在这里等 */</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    P<span class="op">(&amp;</span>sp<span class="op">-&gt;</span>mutex<span class="op">);</span>                      <span class="co">/* 锁队列，保护 rear/buf */</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    sp<span class="op">-&gt;</span>buf<span class="op">[(++</span>sp<span class="op">-&gt;</span>rear<span class="op">)</span> <span class="op">%</span> sp<span class="op">-&gt;</span>n<span class="op">]</span> <span class="op">=</span> item<span class="op">;</span> <span class="co">/* 放入 connfd，循环下标 */</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    V<span class="op">(&amp;</span>sp<span class="op">-&gt;</span>mutex<span class="op">);</span>                      <span class="co">/* 队列改完，解锁 */</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    V<span class="op">(&amp;</span>sp<span class="op">-&gt;</span>items<span class="op">);</span>                      <span class="co">/* 多了一个 item，通知 worker */</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>删除：</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> sbuf_remove<span class="op">(</span>sbuf_t <span class="op">*</span>sp<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> item<span class="op">;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    P<span class="op">(&amp;</span>sp<span class="op">-&gt;</span>items<span class="op">);</span>                      <span class="co">/* 要一个 item；空了就在这里等 */</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    P<span class="op">(&amp;</span>sp<span class="op">-&gt;</span>mutex<span class="op">);</span>                      <span class="co">/* 锁队列，保护 front/buf */</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    item <span class="op">=</span> sp<span class="op">-&gt;</span>buf<span class="op">[(++</span>sp<span class="op">-&gt;</span>front<span class="op">)</span> <span class="op">%</span> sp<span class="op">-&gt;</span>n<span class="op">];</span> <span class="co">/* 取出 connfd，循环下标 */</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    V<span class="op">(&amp;</span>sp<span class="op">-&gt;</span>mutex<span class="op">);</span>                      <span class="co">/* 队列改完，解锁 */</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    V<span class="op">(&amp;</span>sp<span class="op">-&gt;</span>slots<span class="op">);</span>                      <span class="co">/* 多了一个空位，通知 master */</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> item<span class="op">;</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>为什么 P 顺序重要？</p>
+<blockquote>
+<p>必须先等资源计数 <code>slots/items</code>，再拿
+<code>mutex</code>。如果先拿 <code>mutex</code>
+再等资源，线程可能拿着锁睡眠，其他线程无法进入 buffer 改变条件，导致
+deadlock。</p>
+</blockquote>
+<p>两个具体 deadlock 解释：</p>
+<ul>
+<li>insert 错误顺序：producer 先 <code>P(mutex)</code>，发现 buffer full
+后阻塞在 <code>P(slots)</code>。consumer 想 remove 来释放 slot，但拿不到
+<code>mutex</code>。</li>
+<li>remove 错误顺序：worker 先 <code>P(mutex)</code>，发现 buffer empty
+后阻塞在 <code>P(items)</code>。master 想 insert 来增加 item，但拿不到
+<code>mutex</code>。</li>
+</ul>
+<p>重要坑：</p>
+<blockquote>
+<p><code>mutex</code> 只保护 buffer 操作，不能保护
+<code>echo(connfd)</code>。如果 worker 拿着 buffer mutex 调
+<code>echo</code>，慢 client 会让其他 worker 不能取 descriptor，server
+会被串行化。</p>
+</blockquote>
+<p>Part 3 真正要写的答案范围：</p>
+<ul>
+<li><code>sbuf_t</code> 里有哪些字段。</li>
+<li>三个 semaphore 的初值：<code>mutex = 1</code>,
+<code>slots = n</code>, <code>items = 0</code>。</li>
+<li><code>sbuf_insert</code> / <code>sbuf_remove</code> 的 P/V
+顺序。</li>
+</ul>
+<p>worker 不是 Part 3 必写代码，但能帮你理解 <code>remove</code>
+后发生什么：</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="op">(</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> connfd <span class="op">=</span> sbuf_remove<span class="op">(&amp;</span>sbuf<span class="op">);</span>  <span class="co">/* 从 buffer 取一个连接 */</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    echo<span class="op">(</span>connfd<span class="op">);</span>                     <span class="co">/* 服务 client；不要拿着 buffer mutex 做 */</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    Close<span class="op">(</span>connfd<span class="op">);</span>                    <span class="co">/* 服务完关闭连接 */</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>一句话：</p>
+<blockquote>
+<p>counting semaphore 表示资源数量；mutex 保护 critical section；耗时
+I/O 不能放在 buffer critical section 里。</p>
+</blockquote>
+<h3 id="标答里的整体架构参考">标答里的整体架构参考</h3>
+<p>下面这段是标答里的参考架构，用来解释 Part 3 的
+<code>sbuf_insert/remove</code> 在 prethreaded server
+里怎么被调用。<strong>它不是 Part 3 必写答案；Part 3 必写的是
+<code>sbuf_t/init/insert/remove</code>。</strong></p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define NTHREADS  </span><span class="dv">8</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define SBUFSIZE  </span><span class="dv">16</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>sbuf_t sbuf<span class="op">;</span>                          <span class="co">/* master 和 workers 共享的 descriptor buffer */</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> <span class="op">*</span>worker<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>vargp<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    Pthread_detach<span class="op">(</span>pthread_self<span class="op">());</span>    <span class="co">/* worker 不需要 main join，结束自动回收 */</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>        <span class="dt">int</span> connfd <span class="op">=</span> sbuf_remove<span class="op">(&amp;</span>sbuf<span class="op">);</span> <span class="co">/* 等并取一个 connfd */</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>        echo<span class="op">(</span>connfd<span class="op">);</span>                  <span class="co">/* 真正服务 client，可能阻塞 */</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>        Close<span class="op">(</span>connfd<span class="op">);</span>                 <span class="co">/* 服务完关闭这个 connected descriptor */</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> NULL<span class="op">;</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> listenfd<span class="op">,</span> connfd<span class="op">;</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    pthread_t tid<span class="op">;</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    listenfd <span class="op">=</span> Open_listenfd<span class="op">(</span>argv<span class="op">[</span><span class="dv">1</span><span class="op">]);</span> <span class="co">/* 创建 listening descriptor */</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    sbuf_init<span class="op">(&amp;</span>sbuf<span class="op">,</span> SBUFSIZE<span class="op">);</span>        <span class="co">/* 初始化 bounded buffer */</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> NTHREADS<span class="op">;</span> i<span class="op">++)</span></span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>        Pthread_create<span class="op">(&amp;</span>tid<span class="op">,</span> NULL<span class="op">,</span> worker<span class="op">,</span> NULL<span class="op">);</span> <span class="co">/* 预创建 worker pool */</span></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>        connfd <span class="op">=</span> Accept<span class="op">(</span>listenfd<span class="op">,</span> NULL<span class="op">,</span> NULL<span class="op">);</span>    <span class="co">/* master 只负责接连接 */</span></span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>        sbuf_insert<span class="op">(&amp;</span>sbuf<span class="op">,</span> connfd<span class="op">);</span>               <span class="co">/* 把 connfd 交给 workers */</span></span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h2 id="part-4prethreaded-server">Part 4：Prethreaded Server</h2>
+<p>来源：<code>EXE/concurrent&amp;network.pdf</code> Part 4。</p>
+<p>题干问：</p>
+<blockquote>
+<p>Why can a prethreaded server perform better than iterative server and
+thread-per-connection server? Mention both concurrency and resource
+overhead.</p>
+</blockquote>
+<h3 id="必答答案">必答答案</h3>
+<p>对 iterative server：</p>
+<blockquote>
+<p>Iterative server 一次只能服务一个 client。如果某个 client 很慢，或者
+server 阻塞在 <code>echo(connfd)</code> 里，后面的 clients
+都必须等。Prethreaded server 把 accepting 和 servicing 分开：master
+thread 继续 <code>accept</code> 新连接，worker threads 并发服务
+clients。所以一个慢 client 只会占住一个 worker，其他 workers
+还能继续服务其他 clients。</p>
+</blockquote>
+<p>对 thread-per-connection server：</p>
+<blockquote>
+<p>Thread-per-connection server 每来一个 connection 就创建一个新
+thread。这样有 concurrency，但 thread creation / destruction
+有开销；如果 clients 突然很多，会创建过多 threads，增加 memory
+use、scheduling overhead 和 context switches。Prethreaded server
+在启动时创建固定 worker pool，摊薄 thread creation cost，并限制 active
+worker threads 数量。</p>
+</blockquote>
+<p>可加一句：</p>
+<blockquote>
+<p>代价是 prethreaded server 需要 bounded buffer，并且 master thread 和
+workers 之间要做 synchronization。</p>
+</blockquote>
+<p>三种 server 模型：</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>模型</th>
+<th>特点</th>
+<th>问题</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Iterative server</td>
+<td>一次服务一个 client</td>
+<td>慢 client 阻塞后面所有 client</td>
+</tr>
+<tr>
+<td>Thread-per-connection</td>
+<td>每来一个 connection 创建一个 thread</td>
+<td>创建/销毁开销大，连接多时资源压力大</td>
+</tr>
+<tr>
+<td>Prethreaded server</td>
+<td>启动时预创建 worker pool</td>
+<td>需要 bounded buffer 和同步</td>
+</tr>
+</tbody>
+</table>
+<p>Prethreaded server 优势：</p>
+<ul>
+<li>避免每个连接都动态创建 thread。</li>
+<li>master 能快速回到 <code>accept</code>。</li>
+<li>worker 数量可控，不会无限创建线程。</li>
+<li>一个 worker 被慢 client 阻塞时，其他 workers 仍可服务其他
+clients。</li>
+<li>对 I/O-bound 服务，多个 workers 能覆盖等待 I/O 的时间。</li>
+</ul>
+<p>相比 iterative server：</p>
+<blockquote>
+<p>Iterative server 在 <code>echo(connfd)</code> 中服务当前
+client。如果一个 client 很慢或一直不发 EOF，后面的 clients
+都会被拖住。Prethreaded server 把 accepting 和 servicing 分离，多个
+worker 可以并发服务。</p>
+</blockquote>
+<p>相比 thread-per-connection server：</p>
+<blockquote>
+<p>Thread-per-connection 有并发性，但每个 connection 都创建
+thread，短连接多时开销明显；连接突发时线程数量可能无限增长，带来
+memory、scheduler、context switch 压力。Prethreaded server
+启动时创建固定 worker pool，把成本摊掉并限制资源上限。</p>
+</blockquote>
+<h3 id="connfd-传参-bug"><code>&amp;connfd</code> 传参 bug</h3>
+<p>thread-per-connection 里常见错误：</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> connfd<span class="op">;</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="op">(</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    connfd <span class="op">=</span> Accept<span class="op">(</span>listenfd<span class="op">,</span> <span class="op">...);</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    Pthread_create<span class="op">(&amp;</span>tid<span class="op">,</span> NULL<span class="op">,</span> worker<span class="op">,</span> <span class="op">&amp;</span>connfd<span class="op">);</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>问题：</p>
+<blockquote>
+<p>所有 workers 收到的是 master 栈上同一个变量 <code>connfd</code>
+的地址。worker 还没来得及读，master 下一轮 <code>Accept</code>
+可能已经覆盖了 <code>connfd</code>，导致两个 worker 用同一个
+descriptor，或某个连接没人正确服务。</p>
+</blockquote>
+<p>修法有两类：</p>
+<ul>
+<li>thread-per-connection：为每个 <code>connfd</code> 单独
+<code>Malloc(sizeof(int))</code>，thread 里读出后
+<code>Free</code>。</li>
+<li>prethreaded：直接把 descriptor value 拷贝进 bounded buffer，worker
+从 buffer 取 value，不共享 master 栈变量。</li>
+</ul>
+<p>复习课提醒：prethreaded server 期末肯定会考。</p>
+<h2 id="part-5performance-trade-offs">Part 5：Performance
+Trade-offs</h2>
+<p>来源：<code>EXE/concurrent&amp;network.pdf</code> Part 5。</p>
+<p>题干问：</p>
+<blockquote>
+<p>The server uses <code>N</code> worker threads and a buffer of size
+<code>B</code>. Discuss what can go wrong if <code>N</code> or
+<code>B</code> is too small or too large.</p>
+</blockquote>
+<h3 id="必答答案-1">必答答案</h3>
+<p><code>N</code> 太小：</p>
+<blockquote>
+<p>Workers 太少可能无法充分利用机器。如果很多 workers 阻塞在 network I/O
+上，就没有空闲 worker 服务其他 clients，导致 throughput 下降、clients
+等待变久。</p>
+</blockquote>
+<p><code>N</code> 太大：</p>
+<blockquote>
+<p>Workers 太多会增加 memory use / stack space、scheduling
+overhead、context switches、synchronization overhead 和 cache
+pressure。对于 CPU-bound workload，<code>N</code> 远大于 CPU cores
+通常会 hurt performance。</p>
+</blockquote>
+<p>CPU-bound vs I/O-bound：</p>
+<blockquote>
+<p>CPU-bound workload 通常让 <code>N</code> 接近 CPU cores。I/O-bound
+workload 可以让 <code>N</code> 大于 CPU cores，因为很多 workers 可能睡在
+<code>read/write/disk I/O</code> 里，用更多 workers 可以 overlap waiting
+time。</p>
+</blockquote>
+<p><code>B</code> 太小：</p>
+<blockquote>
+<p>Buffer 太小吸收 burst 的能力弱。当所有 workers 都忙时，master thread
+可能经常阻塞在 <code>sbuf_insert</code>。</p>
+</blockquote>
+<p><code>B</code> 太大：</p>
+<blockquote>
+<p>Buffer 太大会隐藏 overload，并增加 queueing delay：已经被 accept 的
+clients 可能要等很久，worker 才会取走它们的 descriptor。它也会多用一些
+memory，虽然 descriptor buffer 通常不算大。</p>
+</blockquote>
+<p>题面参数：</p>
+<ul>
+<li><code>N</code>：worker thread 数量。</li>
+<li><code>B</code>：bounded buffer 大小。</li>
+</ul>
+<p>worker 数不是越多越好。</p>
+<p>如果 <code>N</code> 太小：</p>
+<ul>
+<li>机器可能没被充分利用。</li>
+<li>多个 worker 卡在 network/disk I/O 时，没有足够 worker 服务其他
+client。</li>
+<li>bursty traffic 下吞吐不足。</li>
+</ul>
+<p>如果 <code>N</code> 太大：</p>
+<ul>
+<li>context switch 变多。</li>
+<li>synchronization overhead 变多。</li>
+<li>每个 thread 都要 stack，memory 消耗变大。</li>
+<li>cache pressure 变大。</li>
+</ul>
+<p>如果任务 CPU-bound：</p>
+<ul>
+<li>worker 数接近 CPU cores 通常比较合适。</li>
+<li>太多 threads 主要增加调度和同步开销。</li>
+</ul>
+<p>如果任务 I/O-bound：</p>
+<ul>
+<li>worker 数可以适当大于 CPU cores。</li>
+<li>因为很多 worker 可能阻塞在 <code>read/write/disk I/O</code>
+上。</li>
+<li>但过大后仍然主要增加 overhead。</li>
+</ul>
+<p>buffer 大小 <code>B</code>：</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>情况</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>B</code> 太小</td>
+<td>master 经常阻塞在 <code>sbuf_insert</code>，吸收 burst 能力弱</td>
+</tr>
+<tr>
+<td><code>B</code> 适中</td>
+<td>能缓冲短时间请求突发</td>
+</tr>
+<tr>
+<td><code>B</code> 太大</td>
+<td>client 可能在队列里等很久，queueing delay 变大，也可能隐藏
+overload</td>
+</tr>
+</tbody>
+</table>
+<p>答题句式：</p>
+<blockquote>
+<p>For CPU-bound workloads, too many workers mainly add scheduling
+overhead. For I/O-bound workloads, more workers can help overlap waiting
+time, but an excessive number still wastes memory and causes
+contention.</p>
+</blockquote>
+<blockquote>
+<p>A larger buffer can absorb bursts, but an excessively large buffer
+can increase queueing delay and hide overload.</p>
+</blockquote>
+<h2 id="part-6fairness-and-starvation">Part 6：Fairness and
+Starvation</h2>
+<p>来源：<code>EXE/concurrent&amp;network.pdf</code> Part 6。</p>
+<p>先定位这题在问哪一段：</p>
+<blockquote>
+<p>master 只负责 <code>accept</code> 得到
+<code>connfd</code>；固定数量的 worker 只负责从已经 accept 的
+<code>connfd</code> 里取一个去服务 client；中间那个“转接口 /
+任务队列”就是 bounded buffer。</p>
+</blockquote>
+<p>所以 Part 6 的 FIFO 只是在问：</p>
+<blockquote>
+<p>这些已经被 master 放进 bounded buffer 的
+<code>connfd</code>，是不是按 FIFO 顺序被 worker 取走。</p>
+</blockquote>
+<p>题干问：</p>
+<blockquote>
+<p>Does this semaphore-based FIFO buffer guarantee fairness among
+clients or worker threads? Could starvation still happen?</p>
+</blockquote>
+<h3 id="必答答案-2">必答答案</h3>
+<p>总答案：</p>
+<blockquote>
+<p>No, not fully. 这个设计不保证完整的 client fairness，也不保证 worker
+fairness；starvation 仍然可能发生。</p>
+</blockquote>
+<p>唯一能保证的是：</p>
+<blockquote>
+<p>FIFO buffer 只保证“已经进入 buffer 的 descriptors”按 FIFO 顺序被
+<code>sbuf_remove</code> 取出。A 先 insert，B 后 insert，则 A 先
+remove。</p>
+</blockquote>
+<p>不能保证的是：</p>
+<blockquote>
+<p>Semaphore / scheduler 不保证 FIFO wakeup order，所以不保证最早等待的
+worker 先醒。慢 clients 也可能长期占住所有 workers，让后来的 clients
+等很久，甚至 starvation。</p>
+</blockquote>
+<p>关键区分：</p>
+<ul>
+<li>bounded buffer 可以保证已经入队的 descriptors 按 FIFO
+顺序被取出。</li>
+<li>semaphore / scheduler 不一定保证等待的 worker 按 FIFO
+顺序被唤醒。</li>
+</ul>
+<p>所以：</p>
+<blockquote>
+<p>FIFO buffer gives FIFO service order among queued descriptors, but it
+does not guarantee strict FIFO wakeup order among worker threads.</p>
+</blockquote>
+<p>可能问法：</p>
+<ul>
+<li>是否保证 client 公平？</li>
+<li>是否保证 worker 公平？</li>
+<li>是否可能 starvation？</li>
+</ul>
+<p>答题思路：</p>
+<ul>
+<li>queued descriptors 的顺序由 buffer 决定。</li>
+<li>blocked threads 的唤醒顺序由 semaphore implementation / OS scheduler
+决定，不一定 FIFO。</li>
+<li>POSIX semaphore 是 synchronization primitive，不是 fairness
+policy。</li>
+<li>如果所有 workers 被慢 clients 长时间占住，后来的 clients 可能在
+buffer 里等很久。</li>
+<li>如果 buffer 满了，master 会阻塞在
+<code>sbuf_insert</code>，新连接可能留在 kernel listen
+queue，甚至被拒绝。</li>
+</ul>
+<p>提高 fairness 的方法：</p>
+<ul>
+<li>fair semaphore / ticket lock / FIFO condition-variable queue。</li>
+<li>connection timeout，避免一个慢 client 永远占住 worker。</li>
+<li>限制单个 connection 的服务时间或请求数量。</li>
+<li>overload 时显式 reject / shed load。</li>
+</ul>
+<p>一句话：</p>
+<blockquote>
+<p>Correct synchronization is not the same as fairness.
+<code>mutex</code>、<code>slots</code>、<code>items</code> 让 buffer
+正确，但严格公平需要额外 scheduling policy。</p>
+</blockquote>
+<h2 id="threads-synchronization-背景">Threads / Synchronization
+背景</h2>
+<p>线程共享进程的：</p>
+<ul>
+<li>code</li>
+<li>data</li>
+<li>heap</li>
+<li>shared libraries</li>
+<li>open files</li>
+<li>installed handlers</li>
+</ul>
+<p>线程独有：</p>
+<ul>
+<li>thread ID</li>
+<li>stack</li>
+<li>registers</li>
+<li>PC</li>
+<li>condition codes</li>
+</ul>
+<p>变量是否 shared 的判断：</p>
+<blockquote>
+<p>A variable is shared iff multiple threads reference at least one
+instance of it.</p>
+</blockquote>
+<p>典型共享变量：</p>
+<ul>
+<li>global variable：整个进程一份，常常 shared。</li>
+<li>local static variable：整个进程一份，常常 shared。</li>
+<li>heap object：如果多个 thread 拿到指针，就是 shared。</li>
+<li>ordinary local variable：概念上每个 thread stack
+一份，但注意别把它的地址传给其他 thread。</li>
+</ul>
+<p>data race：</p>
+<blockquote>
+<p>多个 thread
+并发访问同一共享对象，至少一个是写，并且没有同步保护。</p>
+</blockquote>
+<p>critical section：</p>
+<blockquote>
+<p>访问共享状态的一小段代码。必须用 mutex / semaphore / lock
+让它互斥执行。</p>
+</blockquote>
+<h2 id="locks-速查">Locks 速查</h2>
+<p>来源：<code>courseware/2-23-locks_*.pdf</code>。助教点名
+lock，但在这道 <code>concurrent&amp;network</code> 样题里，locks
+主要是帮你理解三件事：</p>
+<ol type="1">
+<li><code>mutex</code> 为什么能保护 bounded buffer。</li>
+<li>为什么“同步正确”不等于“公平”。</li>
+<li>为什么拿着锁睡眠可能 deadlock。</li>
+</ol>
+<h3 id="本题里的-lock-是什么">1. 本题里的 lock 是什么</h3>
+<div class="sourceCode" id="cb19"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>pthread_mutex_lock<span class="op">(&amp;</span>lock<span class="op">);</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co">/* critical section */</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>pthread_mutex_unlock<span class="op">(&amp;</span>lock<span class="op">);</span></span></code></pre></div>
+<p>人话：</p>
+<blockquote>
+<p>lock / mutex 就是“同一时间只让一个 thread 进来改共享数据”的门锁。</p>
+</blockquote>
+<p>在本题里，<code>mutex</code> 保护的是 bounded buffer 的内部状态：</p>
+<ul>
+<li><code>buf</code></li>
+<li><code>front</code></li>
+<li><code>rear</code></li>
+</ul>
+<p>所以：</p>
+<blockquote>
+<p><code>mutex</code> 只保护 insert/remove 这几行，不能保护
+<code>echo(connfd)</code>。<code>echo</code> 可能等 client
+很久，拿着锁做它会把整个 buffer 卡住。</p>
+</blockquote>
+<h3 id="tas-lock-vs-ticket-lock">2. TAS lock vs ticket lock</h3>
+<p>这一小节不是让你手写 lock 实现，只用来回答 fairness。</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>lock</th>
+<th>人话</th>
+<th>fairness</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TAS / spin lock</td>
+<td>大家一直抢同一把锁，抢不到就原地转</td>
+<td>不保证公平，可能 starvation</td>
+</tr>
+<tr>
+<td>ticket lock</td>
+<td>每个 thread 先拿号，按号码轮流进</td>
+<td>更公平，课件说 no starvation</td>
+</tr>
+</tbody>
+</table>
+<p>和 Part 6 的关系：</p>
+<blockquote>
+<p>普通 semaphore wakeup 不保证 FIFO，所以 FIFO buffer 不等于 FIFO
+worker wakeup。如果题目问怎么提高公平性，可以说使用 fair semaphore /
+ticket lock / FIFO waiting queue。</p>
+</blockquote>
+<h3 id="拿着锁睡眠会-deadlock">3. 拿着锁睡眠会 deadlock</h3>
+<p>最重要的直觉：</p>
+<blockquote>
+<p>如果一个 thread 拿着 lock 去睡觉，其他 thread 可能永远拿不到 lock
+来改变条件或唤醒它，于是 deadlock。</p>
+</blockquote>
+<p>对应 Part 3：</p>
+<ul>
+<li>insert 必须先 <code>P(slots)</code>，再 <code>P(mutex)</code>。</li>
+<li>remove 必须先 <code>P(items)</code>，再 <code>P(mutex)</code>。</li>
+</ul>
+<p>否则可能出现：</p>
+<ul>
+<li>master 拿着 <code>mutex</code> 等空位，但 worker 需要
+<code>mutex</code> 才能取走 item 释放空位。</li>
+<li>worker 拿着 <code>mutex</code> 等 item，但 master 需要
+<code>mutex</code> 才能放入 item。</li>
+</ul>
+<p>一句话：</p>
+<blockquote>
+<p>Locks 在本题里只要会这三点：保护共享 buffer、不能拿锁做慢
+I/O、普通同步不保证公平。</p>
+</blockquote>
+<h2 id="condition-variable-背景">Condition Variable 背景</h2>
+<p>CV 不是本题主线，但如果题目提到
+<code>pthread_cond_wait</code>，记这个模板。</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>pthread_mutex_lock<span class="op">(&amp;</span>mutex<span class="op">);</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="op">(!</span>condition<span class="op">)</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    pthread_cond_wait<span class="op">(&amp;</span>cond<span class="op">,</span> <span class="op">&amp;</span>mutex<span class="op">);</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>pthread_mutex_unlock<span class="op">(&amp;</span>mutex<span class="op">);</span></span></code></pre></div>
+<p>为什么用 <code>while</code>：</p>
+<ul>
+<li>可能 spurious wakeup。</li>
+<li>被唤醒后条件可能已被其他 thread 改变。</li>
+<li><code>signal</code>
+只表示“有人叫醒你”，不保证醒来时条件仍然成立。</li>
+</ul>
+<p>为什么 <code>cond_wait</code> 要传 mutex：</p>
+<blockquote>
+<p><code>pthread_cond_wait</code> 会 atomic 地释放 mutex 并让 thread
+睡眠；醒来后重新 acquire mutex 再返回。</p>
+</blockquote>
+<p>本章优先级：CV 会看模板即可，别展开刷大题。</p>
+<h2 id="弱化背景signal-io-http-dns">弱化背景：Signal / I/O / HTTP /
+DNS</h2>
+<p>复习课修正：</p>
+<ul>
+<li>signal 已确定期末不考。</li>
+<li>system-level I/O 大概率不考。</li>
+<li>HTTP / DNS 属于 network 背景，不是
+<code>concurrent&amp;network</code> 样题主线。</li>
+</ul>
+<p>如果时间紧，跳过这些：</p>
+<ul>
+<li>async-signal-safe</li>
+<li><code>sigsuspend</code></li>
+<li><code>fork + dup2 + stdio buffer + O_APPEND</code></li>
+<li>descriptor table / open file table / v-node table</li>
+<li>HTTP request / response 格式</li>
+<li>DNS name lookup 细节</li>
+</ul>
+<p>本章今晚路线：</p>
+<ol type="1">
+<li>先读“先把整章捡回来”。</li>
+<li>背 socket API 和 <code>listenfd</code> / <code>connfd</code>。</li>
+<li>把 SNAT 四步表默写一遍。</li>
+<li>把 <code>sbuf_insert</code> / <code>sbuf_remove</code> 的 P/V
+顺序默写一遍。</li>
+<li>背 prethreaded server 优势和 <code>&amp;connfd</code> bug。</li>
+<li>看 N/B trade-off 和 fairness。</li>
+<li>最后扫一眼 Locks 速查。</li>
+</ol>
+<h2 id="考场检查清单">考场检查清单</h2>
+<ol type="1">
+<li>socket API 题：先区分 client 端 <code>connect</code> 和 server 端
+<code>bind/listen/accept</code>。</li>
+<li><code>listenfd</code> 只监听；<code>connfd</code> 才读写。</li>
+<li>SNAT 题画四步：出去前、出去后、回来前、回来后。</li>
+<li>server after SNAT 看到的是 router public <code>IP:port</code>。</li>
+<li>private IP 不能公网路由，server 不能直接看到
+<code>192.168.x.x</code>。</li>
+<li>bounded buffer：insert 先 <code>P(slots)</code>，remove 先
+<code>P(items)</code>。</li>
+<li>拿 <code>mutex</code> 前先等资源数量，避免拿锁睡眠。</li>
+<li><code>mutex</code> 只保护 buffer，不要拿着它调
+<code>echo(connfd)</code>。</li>
+<li>prethreaded server：重点比较 iterative 和
+thread-per-connection。</li>
+<li>thread-per-connection 注意 <code>&amp;connfd</code> race。</li>
+<li>performance：CPU-bound 看 cores，I/O-bound 可以更多 workers。</li>
+<li><code>B</code> 太大可能增加 queueing delay，太小吸收不了
+burst。</li>
+<li>fairness：FIFO buffer 不等于 FIFO semaphore wakeup。</li>
+<li>TAS lock 可能浪费 CPU / starvation；ticket lock 更公平。</li>
+<li>正确同步不等于严格公平。</li>
+</ol>
+<h2 id="高频术语">高频术语</h2>
+<ul>
+<li>Client-server model：客户端-服务器模型。</li>
+<li>Socket：套接字。</li>
+<li>Socket address：<code>IP:port</code>。</li>
+<li>Socket pair：连接四元组。</li>
+<li><code>listenfd</code>：监听描述符。</li>
+<li><code>connfd</code>：已连接描述符。</li>
+<li>SNAT: Source Network Address Translation。</li>
+<li>Private IP address：私有 IP 地址。</li>
+<li>NAT table：NAT 映射表。</li>
+<li>Concurrent server：并发服务器。</li>
+<li>Iterative server：迭代服务器，一次处理一个 client。</li>
+<li>Thread-per-connection：每个连接创建一个线程。</li>
+<li>Prethreaded server：预线程化服务器。</li>
+<li>Thread pool：线程池。</li>
+<li>Bounded buffer：有界缓冲区。</li>
+<li>Producer-consumer problem：生产者-消费者问题。</li>
+<li>Semaphore：信号量。</li>
+<li>Counting semaphore：计数信号量。</li>
+<li>Binary semaphore：二元信号量。</li>
+<li>Mutex：互斥锁。</li>
+<li>Critical section：临界区。</li>
+<li>Data race：数据竞争。</li>
+<li>Deadlock：死锁。</li>
+<li>Starvation：饥饿。</li>
+<li>Fairness：公平性。</li>
+<li>Test-and-set：测试并设置原子指令。</li>
+<li>Ticket lock：票号锁。</li>
+<li>Condition variable：条件变量。</li>
+</ul>
+</body>
+</html>

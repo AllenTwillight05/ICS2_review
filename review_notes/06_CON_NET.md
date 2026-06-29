@@ -539,6 +539,32 @@ buffer 大小 `B`：
 
 来源：`EXE/concurrent&network.pdf` Part 6。
 
+先定位这题在问哪一段：
+
+> master 只负责 `accept` 得到 `connfd`；固定数量的 worker 只负责从已经 accept 的 `connfd` 里取一个去服务 client；中间那个“转接口 / 任务队列”就是 bounded buffer。
+
+所以 Part 6 的 FIFO 只是在问：
+
+> 这些已经被 master 放进 bounded buffer 的 `connfd`，是不是按 FIFO 顺序被 worker 取走。
+
+题干问：
+
+> Does this semaphore-based FIFO buffer guarantee fairness among clients or worker threads? Could starvation still happen?
+
+### 必答答案
+
+总答案：
+
+> No, not fully. 这个设计不保证完整的 client fairness，也不保证 worker fairness；starvation 仍然可能发生。
+
+唯一能保证的是：
+
+> FIFO buffer 只保证“已经进入 buffer 的 descriptors”按 FIFO 顺序被 `sbuf_remove` 取出。A 先 insert，B 后 insert，则 A 先 remove。
+
+不能保证的是：
+
+> Semaphore / scheduler 不保证 FIFO wakeup order，所以不保证最早等待的 worker 先醒。慢 clients 也可能长期占住所有 workers，让后来的 clients 等很久，甚至 starvation。
+
 关键区分：
 
 - bounded buffer 可以保证已经入队的 descriptors 按 FIFO 顺序被取出。
@@ -613,9 +639,13 @@ critical section：
 
 ## Locks 速查
 
-来源：`courseware/2-23-locks_*.pdf`。助教点名 lock，这里只保留最可能用来解释公平性/饥饿/死锁的点。
+来源：`courseware/2-23-locks_*.pdf`。助教点名 lock，但在这道 `concurrent&network` 样题里，locks 主要是帮你理解三件事：
 
-### mutex 基本用法
+1. `mutex` 为什么能保护 bounded buffer。
+2. 为什么“同步正确”不等于“公平”。
+3. 为什么拿着锁睡眠可能 deadlock。
+
+### 1. 本题里的 lock 是什么
 
 ```c
 pthread_mutex_lock(&lock);
@@ -623,74 +653,52 @@ pthread_mutex_lock(&lock);
 pthread_mutex_unlock(&lock);
 ```
 
-核心：
+人话：
 
-- lock 保护 shared data，不保护“整段业务逻辑”。
-- critical section 越短越好。
-- 不要拿着 lock 做可能长时间阻塞的 I/O。
+> lock / mutex 就是“同一时间只让一个 thread 进来改共享数据”的门锁。
 
-### Test-and-Set spin lock
+在本题里，`mutex` 保护的是 bounded buffer 的内部状态：
 
-思想：用硬件 atomic instruction 抢锁。
+- `buf`
+- `front`
+- `rear`
 
-```c
-while (TestAndSet(&lock->flag, 1) == 1)
-    ;
-```
+所以：
 
-特点：
+> `mutex` 只保护 insert/remove 这几行，不能保护 `echo(connfd)`。`echo` 可能等 client 很久，拿着锁做它会把整个 buffer 卡住。
 
-- 简单。
-- 等锁时一直 spin，浪费 CPU。
-- 不保证公平，可能 starvation。
+### 2. TAS lock vs ticket lock
 
-### ticket lock
+这一小节不是让你手写 lock 实现，只用来回答 fairness。
 
-思想：每个 thread 取一个号，按 `turn` 排队。
+| lock | 人话 | fairness |
+|---|---|---|
+| TAS / spin lock | 大家一直抢同一把锁，抢不到就原地转 | 不保证公平，可能 starvation |
+| ticket lock | 每个 thread 先拿号，按号码轮流进 | 更公平，课件说 no starvation |
 
-```c
-int myturn = FetchAndAdd(&lock->ticket);
-while (lock->turn != myturn)
-    ;
-```
+和 Part 6 的关系：
 
-unlock：
+> 普通 semaphore wakeup 不保证 FIFO，所以 FIFO buffer 不等于 FIFO worker wakeup。如果题目问怎么提高公平性，可以说使用 fair semaphore / ticket lock / FIFO waiting queue。
 
-```c
-lock->turn++;
-```
+### 3. 拿着锁睡眠会 deadlock
 
-特点：
+最重要的直觉：
 
-- 按 ticket 顺序进 critical section。
-- 比普通 TAS lock 更公平。
-- 课件结论：No starvation。
+> 如果一个 thread 拿着 lock 去睡觉，其他 thread 可能永远拿不到 lock 来改变条件或唤醒它，于是 deadlock。
 
-### sleep while holding lock 会 deadlock
+对应 Part 3：
 
-典型错误：
+- insert 必须先 `P(slots)`，再 `P(mutex)`。
+- remove 必须先 `P(items)`，再 `P(mutex)`。
 
-```c
-queue_add(lock->q, gettid());
-park();
-lock->guard = 0;
-```
+否则可能出现：
 
-问题：
+- master 拿着 `mutex` 等空位，但 worker 需要 `mutex` 才能取走 item 释放空位。
+- worker 拿着 `mutex` 等 item，但 master 需要 `mutex` 才能放入 item。
 
-> thread 拿着 guard spinlock 去 sleep，其他 thread 无法拿 guard 来 unlock / unpark，系统卡住。
+一句话：
 
-正确思路：
-
-- 入队后先 release guard。
-- 再 `park()` 睡眠。
-- 或用 `setpark()` / futex 这类机制避免 wakeup-waiting race。
-
-### lock 和本题的关系
-
-- bounded buffer 的 `mutex` 是一种 lock，用来保护 `front/rear/buf`。
-- semaphore wakeup 不保证 FIFO，所以 FIFO buffer 不等于 FIFO worker wakeup。
-- ticket lock 可以作为“更公平的锁”的例子。
+> Locks 在本题里只要会这三点：保护共享 buffer、不能拿锁做慢 I/O、普通同步不保证公平。
 
 ## Condition Variable 背景
 
