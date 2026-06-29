@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>04 Virtual Memory</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">04 Virtual Memory</h1>
+</header>
+<h1 id="virtual-memory-开卷速查">04 Virtual Memory 开卷速查</h1>
+<h2 id="一分钟速查">一分钟速查</h2>
+<p>VM
+是这次复习的重点题。高频考点不是“背概念”，而是：位数计算、多级页表、huge
+pages、VIPT、<code>mmap</code>、page fault、swapping / page
+replacement、COW、clock algorithm，外加一个 allocator / buddy system
+小题的可能性。</p>
+<p>来源优先级：</p>
+<ul>
+<li><code>QUIZ/ics2-quiz.pdf</code>：Problem 3，VM 主体真题。</li>
+<li><code>QUIZ/ics2-quiz-2&amp;3.pptx</code>：Problem 3
+walkthrough。</li>
+<li><code>courseware/2-17-vm_*.pdf</code>：VA/PA、page
+table、TLB、VIPT。</li>
+<li><code>courseware/2-18-vm-part2_*.pdf</code>：<code>mmap</code>、COW、replacement、clock
+algorithm。</li>
+<li><code>courseware/2-19-vm-part3_*.pdf</code>：allocator、buddy/slab。</li>
+</ul>
+<p>复习课补充：</p>
+<ul>
+<li>QUIZ 已覆盖 bit 位数、多级页表、VIPT、<code>mmap</code>。</li>
+<li>老师明确说：除了 QUIZ Problem 3，还要复习 swapping 等 QUIZ 没考到的
+VM 知识点。</li>
+<li>还要额外重视
+<code>swapping</code>、<code>page replacement</code>、<code>clock algorithm</code>
+trace。</li>
+<li>allocator / buddy system 也可能单独出小题。</li>
+</ul>
+<p>题型对应来源：</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>题型</th>
+<th>主要来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VPO/PPO/VPN/PPN/entries per PT page/index bits/CI/CO/CT</td>
+<td><code>QUIZ/ics2-quiz.pdf</code> Problem 3.1</td>
+</tr>
+<tr>
+<td>多级页表 page-table pages 数量、huge pages 节省内存</td>
+<td><code>QUIZ/ics2-quiz.pdf</code> Problem 3.2</td>
+</tr>
+<tr>
+<td>VIPT 条件 <code>CI + CO &lt;= VPO</code></td>
+<td><code>QUIZ/ics2-quiz.pdf</code> Problem
+3.3；<code>ics2-quiz-2&amp;3.pptx</code></td>
+</tr>
+<tr>
+<td><code>mmap</code> vs <code>read + write</code>、on-demand
+paging</td>
+<td><code>QUIZ/ics2-quiz.pdf</code> Problem 3.4</td>
+</tr>
+<tr>
+<td>page fault / TLB / COW / <code>fork</code> 机制</td>
+<td><code>courseware/2-17-vm_*.pdf</code>、<code>2-18-vm-part2_*.pdf</code></td>
+</tr>
+<tr>
+<td>swapping / page replacement / dirty write-back</td>
+<td><code>courseware/2-18-vm-part2_*.pdf</code>；复习课点名</td>
+</tr>
+<tr>
+<td>clock algorithm trace</td>
+<td><code>courseware/2-18-vm-part2_*.pdf</code></td>
+</tr>
+<tr>
+<td>allocator / buddy system</td>
+<td><code>courseware/2-19-vm-part3_*.pdf</code></td>
+</tr>
+</tbody>
+</table>
+<p>核心句：</p>
+<blockquote>
+<p>VM 题本质上是两件事：地址怎么切、页面怎么进出。前者是
+VPN/VPO、PPN/PPO、页表、VIPT；后者是 page fault、demand
+paging、swapping、COW、replacement。</p>
+</blockquote>
+<h2 id="基本概念">基本概念</h2>
+<ul>
+<li>VA: Virtual Address，虚拟地址。</li>
+<li>PA: Physical Address，物理地址。</li>
+<li>Page：页，常见大小 4KB。</li>
+<li>VPN / VPO：virtual page number / virtual page offset。</li>
+<li>PPN / PPO：physical page number / physical page offset。</li>
+<li>PTE：page table entry，存 PPN + 一堆状态位。</li>
+<li>MMU：Memory Management Unit，负责地址翻译。</li>
+<li>TLB：地址翻译的 cache。</li>
+</ul>
+<p>地址拆分：</p>
+<pre class="text"><code>VA = VPN | VPO
+PA = PPN | PPO</code></pre>
+<p>页大小是 <code>2^p</code> bytes 时：</p>
+<pre class="text"><code>VPO bits = PPO bits = p
+VPN bits = VA bits - p
+PPN bits = PA bits - p</code></pre>
+<p>关键点：</p>
+<blockquote>
+<p>地址翻译只改 page number，不改 page offset。VPO 和 PPO 相同。</p>
+</blockquote>
+<h2 id="vm-完整链路">VM 完整链路</h2>
+<p>
+<img src="../assets/vm/tlb-hit-p56.png" alt="TLB hit 链路图" width="320">
+<img src="../assets/vm/tlb-miss-p57.png" alt="TLB miss 链路图" width="320">
+</p>
+<p>
+<img src="../assets/vm/four-level-page-table-p74.png" alt="4-level page table 链路图" width="650">
+</p>
+<p>
+<img src="../assets/vm/core-i7-address-translation-p82.png" alt="Core i7 address translation 链路图" width="650">
+</p>
+<p>这是做 VM 题时脑子里要先跑一遍的主线：</p>
+<pre class="text"><code>CPU 发出 VA
+-&gt; MMU 拆成 VPN + VPO
+-&gt; 先查 TLB
+-&gt; TLB hit：直接得到 PPN
+-&gt; TLB miss：用 PTBR 找当前进程页表，再用 VPN 查 PTE （PTEA = PTBR + VPN * sizeof(PTE)）
+-&gt; PTE valid=1：得到 PPN，并可把映射装入 TLB
+-&gt; PPN + VPO 拼成 PA
+-&gt; 用 PA 访问 cache / physical memory
+-&gt; PTE valid=0：触发 page fault exception，交给 OS 处理</code></pre>
+<p>要点：</p>
+<ul>
+<li>程序和 CPU 指令里看到的是 virtual address。</li>
+<li>PTBR 指向当前进程的 page table；进程切换时会换 PTBR。</li>
+<li>TLB 是 PTE / 地址翻译结果的 cache，减少查页表的开销。</li>
+<li>page table 把 VPN 翻译成 PPN，同时记录
+valid、protection、dirty、reference 等状态位。</li>
+<li>地址翻译只替换 page number：<code>VPN -&gt; PPN</code>，offset
+保持不变：<code>VPO = PPO</code>。</li>
+<li>如果 PTE
+valid=0，可能是合法页面不在内存，也可能是非法地址或权限错误。</li>
+</ul>
+<h2 id="必背公式">必背公式</h2>
+<h3 id="位数">1. 位数</h3>
+<pre class="text"><code>page size = 2^p
+VPO = PPO = p
+VPN = VA bits - p
+PPN = PA bits - p</code></pre>
+<h3 id="每页页表项个数">2. 每页页表项个数</h3>
+<pre class="text"><code>entries per page-table page = page_table_page_size / PTE_size
+index bits per level = log2(entries per page-table page)</code></pre>
+<h3 id="cache-vipt">3. Cache / VIPT</h3>
+<pre class="text"><code>CO = log2(line size)
+CI = log2(number of sets)
+CT = PA bits - CI - CO
+VIPT feasibility: CI + CO &lt;= VPO</code></pre>
+<h2 id="题型模板">题型模板</h2>
+<h3 id="bit-width-fundamentals">1. Bit-width fundamentals</h3>
+<p>来源：<code>QUIZ/ics2-quiz.pdf</code> Problem 3.1。</p>
+<p>典型配置：</p>
+<ul>
+<li>VA = 48 bits</li>
+<li>PA = 52 bits</li>
+<li>page size = 4KB = <code>2^12</code></li>
+<li>PTE = 8B</li>
+<li>L1 data cache = 64 sets × 8-way × 64B</li>
+</ul>
+<p>计算：</p>
+<pre class="text"><code>VPO / PPO = 12
+VPN = 48 - 12 = 36
+PPN = 52 - 12 = 40
+entries per PT page = 4096 / 8 = 512
+index bits per PT level = log2(512) = 9
+CO = log2(64) = 6
+CI = log2(64) = 6
+CT = 52 - 6 - 6 = 40</code></pre>
+<p>开卷提示：这题基本就是代公式，不要紧张。</p>
+<h3 id="多级页表占多少内存">2. 多级页表占多少内存</h3>
+<p>来源：<code>QUIZ/ics2-quiz.pdf</code> Problem 3.2。</p>
+<p>核心原则：</p>
+<blockquote>
+<p>Count page-table pages, not total mapped pages.</p>
+</blockquote>
+<p>x86-64 四级页表拆分：</p>
+<pre class="text"><code>L1 PML4: bits 47-39
+L2 PDPT: bits 38-30
+L3 PD:   bits 29-21
+L4 PT:   bits 20-12
+VPO:     bits 11-0</code></pre>
+<p>做题步骤：</p>
+<ol type="1">
+<li>写 start VA 和 end VA。</li>
+<li>分别拆出 L1/L2/L3/L4 indices。</li>
+<li>看每一级有多少不同 index 被使用。</li>
+<li>每个被使用的下一级 table 需要一个 page-table page。</li>
+<li>总页表内存 = page-table pages 数 × 4KB。</li>
+</ol>
+<p>QUIZ 典型结论：映射一个从 <code>0x0040_0000</code> 开始的 8MB
+连续区间时，</p>
+<ul>
+<li>L1：1 page</li>
+<li>L2：1 page</li>
+<li>L3：1 page</li>
+<li>L4：4 pages</li>
+<li>总计：<code>7 pages = 28KB</code></li>
+</ul>
+<p>易错点：</p>
+<ul>
+<li>不要把“映射了多少虚拟页”直接当成“用了多少页表页”。</li>
+<li>一个 L4 page-table page 可覆盖 512 个 4KB pages，也就是 2MB
+范围。</li>
+</ul>
+<h3 id="huge-pages">3. Huge pages</h3>
+<p>来源：<code>QUIZ/ics2-quiz.pdf</code> Problem 3.2(b)。</p>
+<p>2MB huge page 的关键：</p>
+<ul>
+<li>L3（PD）entry 设置 PS bit。</li>
+<li>直接映射 2MB physical frame。</li>
+<li>省掉下面的 L4 PT page。</li>
+</ul>
+<p>同样 8MB 映射：</p>
+<ul>
+<li>L1：1 page</li>
+<li>L2：1 page</li>
+<li>L3：1 page</li>
+<li>L4：0 page</li>
+<li>总计：<code>3 pages = 12KB</code></li>
+<li>比 regular pages 节省：<code>28 - 12 = 16KB</code></li>
+</ul>
+<p>一句话答法：</p>
+<blockquote>
+<p>Huge pages 不是消灭所有页表开销，而是 prune 掉 L4 level。</p>
+</blockquote>
+<h3 id="vipt">4. VIPT</h3>
+<p>来源：<code>QUIZ/ics2-quiz.pdf</code> Problem
+3.3；<code>ics2-quiz-2&amp;3.pptx</code>。</p>
+<p>关键条件：</p>
+<pre class="text"><code>CI + CO &lt;= VPO</code></pre>
+<p>含义：</p>
+<blockquote>
+<p>cache index bits 和 cache offset bits 必须全部落在 page offset
+内，因为 page offset 在 VA 和 PA 中相同。</p>
+</blockquote>
+<p>例：32KB L1，64 sets，8-way，64B line，4KB page。</p>
+<pre class="text"><code>CO = 6
+CI = 6
+VPO = 12
+6 + 6 = 12 &lt;= 12</code></pre>
+<p>所以 VIPT feasible。</p>
+<p>64KB 两种设计：</p>
+<ul>
+<li><p>Design A: 128 sets × 8-way × 64B<br />
+<code>CI = 7, CO = 6, 7 + 6 = 13 &gt; 12</code><br />
+结论：VIPT breaks，需要最小 page size = <code>2^13 = 8KB</code></p></li>
+<li><p>Design B: 64 sets × 16-way × 64B<br />
+<code>CI = 6, CO = 6, 6 + 6 = 12 &lt;= 12</code><br />
+结论：VIPT still works</p></li>
+</ul>
+<p>易错点：</p>
+<ul>
+<li>扩大 cache 不一定破坏 VIPT。</li>
+<li>增大 sets 会增加 CI；增大 associativity 不增加 CI。</li>
+</ul>
+<h3 id="tlb-page-hit-page-fault">5. TLB / page hit / page fault</h3>
+<p>来源：<code>courseware/2-17-vm_*.pdf</code>。</p>
+<p>Page hit 流程：</p>
+<ol type="1">
+<li>CPU 发出 VA。</li>
+<li>MMU 通过 TLB/页表得到 PTE。</li>
+<li>若 valid=1，则得到 PA。</li>
+<li>cache/memory 返回数据。</li>
+</ol>
+<p>TLB hit：</p>
+<ul>
+<li>省掉一次访问内存取 PTE 的开销。</li>
+</ul>
+<p>TLB miss：</p>
+<ul>
+<li>多一次访问页表的开销。</li>
+</ul>
+<p>Page fault：</p>
+<ol type="1">
+<li>CPU 发 VA。</li>
+<li>MMU 发现 PTE valid=0。</li>
+<li>触发 page fault exception。</li>
+<li>OS 判断原因。</li>
+<li>如果合法但页面不在内存：page in / swap in。</li>
+<li>如果 victim dirty：先写回。</li>
+<li>更新 PTE。</li>
+<li>重新执行 faulting instruction。</li>
+</ol>
+<p>常考三类原因：</p>
+<ul>
+<li>物理内存不够，页面被 swap out。</li>
+<li>on-demand paging：例如 <code>mmap</code> 后第一次访问才加载。</li>
+<li>非法地址或权限错误：segmentation fault。</li>
+</ul>
+<h3 id="swapping-page-replacement">6. Swapping / page replacement</h3>
+<p>来源：<code>courseware/2-18-vm-part2_*.pdf</code>；复习课明确点名
+QUIZ 外补充。</p>
+<p>Swapping 要解决的问题：</p>
+<blockquote>
+<p>物理内存放不下所有 virtual pages，所以 OS 需要把一部分页临时放到
+disk，需要时再换回 physical memory。</p>
+</blockquote>
+<p>基本流程：</p>
+<ol type="1">
+<li>进程访问某个 VA。</li>
+<li>PTE 显示该 virtual page 合法，但不在 physical memory。</li>
+<li>触发 page fault。</li>
+<li>OS 找一个空闲 physical frame（用来承载一个 virtual page
+的固定大小物理内存块）。</li>
+<li>如果没有空闲 frame，就用 replacement policy 选 victim page。</li>
+<li>如果 victim 是 dirty page，先写回 disk；如果
+clean，通常可以直接丢弃。</li>
+<li>从 disk 把需要的 page swap in 到 frame。</li>
+<li>更新 PTE / TLB，重新执行 faulting instruction。</li>
+</ol>
+<p>关键区分：</p>
+<ul>
+<li>swap out：把内存中的页换到 disk，释放 physical frame。</li>
+<li>swap in：把 disk 上的页重新读回 physical memory。</li>
+<li>dirty page：被写过，swap out 前必须保存。</li>
+<li>clean page：没有被改过，通常可直接丢弃，之后再从原 backing store
+读回。</li>
+</ul>
+<p>常见问法：</p>
+<ul>
+<li><p>“为什么会 page fault？”<br />
+答：页面合法但不在内存，可能被 swap out，也可能是 demand paging
+尚未加载。</p></li>
+<li><p>“为什么需要 replacement policy？”<br />
+答：因为 physical memory 有限，swap in 新页时可能必须踢出旧页。</p></li>
+<li><p>“为什么 replacement 常用 LRU 思想？”<br />
+答：利用
+locality。最近用过的页更可能很快再用，久未访问的页更适合换出。</p></li>
+</ul>
+<p>补充概念：</p>
+<ul>
+<li>Working set：进程近期活跃使用的页面集合。</li>
+<li>Thrashing：物理内存太小，系统频繁 swap
+in/out，真正计算时间很少，性能急剧下降。</li>
+</ul>
+<p>一句话答法：</p>
+<blockquote>
+<p>Swapping 是 VM 把 physical memory 当作 disk 的 cache 来管理；page
+replacement 决定 cache 满时踢谁。</p>
+</blockquote>
+<h3 id="mmap-为什么快">7. <code>mmap</code> 为什么快</h3>
+<p>来源：<code>QUIZ/ics2-quiz.pdf</code> Problem 3.4。</p>
+<ul>
+<li>mmap 先只建立“用户 VA 区间 ↔︎ 文件
+offset”的关系，不读完整文件。（先给进程分配/保留一段合法用户虚拟地址范围，但不一定立刻分配物理内存或读文件内容。）首次访问某页时，PTE
+不存在触发 page fault；OS 检查合法后，把对应文件页读入 page cache，更新
+PTE，让该 VA 指向该物理页，再重执行指令。只访问的页才会被调入。</li>
+</ul>
+<p><code>read + write</code>：</p>
+<pre class="text"><code>disk -&gt; kernel page cache -&gt; user buffer -&gt; kernel output buffer</code></pre>
+<p>CPU copy 两次：</p>
+<ol type="1">
+<li><code>read()</code>：kernel page cache -&gt; user buffer</li>
+<li><code>write()</code>：user buffer -&gt; kernel output buffer</li>
+</ol>
+<p><code>mmap + write</code>：</p>
+<pre class="text"><code>disk -&gt; kernel page cache = mapped region -&gt; kernel output buffer</code></pre>
+<p>核心点：</p>
+<ul>
+<li><code>mmap()</code> 不复制文件内容到 user buffer。</li>
+<li>它安装 PTE，让用户虚拟地址直接映射 page cache 中的页。</li>
+<li>所以 CPU copy 只剩一次 <code>write()</code>。</li>
+</ul>
+<p>大文件只读 header 时：</p>
+<ul>
+<li><code>read(fd, buf, 1GB)</code> 会把整个 1GB 读入并复制。</li>
+<li><code>mmap</code> 是 lazy / demand paging，只触碰前 4KB 时通常只
+fault in 一个页。（只访问的 pages 才会 fault in）</li>
+</ul>
+<p>一句话答法：</p>
+<blockquote>
+<p><code>mmap</code> wins by copy elimination and demand paging, not
+because it avoids all syscalls.</p>
+</blockquote>
+<h3 id="cow">8. COW</h3>
+<p>来源：<code>courseware/2-18-vm-part2_*.pdf</code>。</p>
+<p>
+<img src="../assets/vm/cow-private-object-p38.png" alt="Private copy-on-write object 图" width="480">
+</p>
+<p>Copy-on-Write：</p>
+<ul>
+<li><code>fork</code> 后父子进程先共享相同物理页。</li>
+<li>PTE 标为只读/private COW。</li>
+<li>任一进程写该页时触发 page fault。</li>
+<li>fault handler 分配新页、复制旧内容、更新写入进程的 PTE。</li>
+</ul>
+<p>一句话：</p>
+<blockquote>
+<p>只在“真正写”的那一页上复制，其余页继续共享。</p>
+</blockquote>
+<h3 id="clock-algorithm">9. Clock algorithm</h3>
+<p>来源：<code>courseware/2-18-vm-part2_*.pdf</code>；复习课点名。</p>
+<p>
+<img src="../assets/vm/FIFO.png" alt="FIFO page replacement" width="320">
+<img src="../assets/vm/SECOND_CHANCE.png" alt="Second chance page replacement" width="320">
+</p>
+<p>
+<img src="../assets/vm/LRU.png" alt="LRU page replacement" width="320">
+<img src="../assets/vm/CLOCK.png" alt="Clock page replacement" width="320">
+</p>
+<p>Clock 是 LRU 的近似：</p>
+<ul>
+<li>每页有 reference bit。</li>
+<li>指针像钟表一样扫描。</li>
+<li>遇到 <code>reference=1</code>：清零并跳过。遇到
+<code>reference=0</code>：选为 victim。</li>
+</ul>
+<p>考试套路：</p>
+<blockquote>
+<p>给访问序列和若干物理页框，让你按时间线一步步写当前内存里有哪些页、reference
+bit 状态、时针指向哪里。</p>
+</blockquote>
+<p>课件第 54 页这版指针规则：</p>
+<ul>
+<li><code>*</code> 表示 <code>reference bit = 1</code>。</li>
+<li>命中：只把该页 reference bit 设为 1，指针保持在上一位置不动。</li>
+<li>缺页且有空位：插入空位，新页 reference bit 设为
+1，指针停在插入位置。</li>
+<li>缺页且内存已满：从指针的下一个位置开始扫。
+<ul>
+<li>遇到 <code>reference=1</code>：清成 0，继续往后扫。</li>
+<li>遇到 <code>reference=0</code>：替换它，新页 reference bit 设为
+1，指针停在新插入位置。</li>
+</ul></li>
+</ul>
+<p>关键句：</p>
+<blockquote>
+<p>指针停在上一次换入位置；下一次需要换出时，从它的下一个位置开始扫。</p>
+</blockquote>
+<p>和 swapping 的关系：</p>
+<blockquote>
+<p>Clock algorithm 是一种 page replacement
+policy。它决定物理页框满时哪个 page 被 swap out。</p>
+</blockquote>
+<h3 id="allocator-buddy-slab">10. Allocator / buddy / slab</h3>
+<p>来源：<code>courseware/2-19-vm-part3_*.pdf</code>；复习课点名。</p>
+<p>这部分如果出题，大概率是简答或小计算，不是让你手写完整
+<code>malloc</code>。</p>
+<p>核心问题：</p>
+<blockquote>
+<p>allocator 把 heap / physical memory 管成一堆 blocks，在速度和 memory
+utilization 之间折中。</p>
+</blockquote>
+<p>基本接口：</p>
+<ul>
+<li><code>malloc(size)</code>：返回至少 <code>size</code> bytes 的
+block，通常要满足 alignment。</li>
+<li><code>free(p)</code>：把 <code>p</code> 指向的 block 还给
+allocator。</li>
+<li><code>sbrk(+n)</code>：向 OS 要更多 heap 空间，移动
+<code>brk</code>。</li>
+</ul>
+<p>两个性能目标：</p>
+<ul>
+<li>throughput：单位时间完成多少次 <code>malloc/free</code>。</li>
+<li>memory utilization：有效 payload 占 heap 的比例，常见形式是
+<code>U = P / H</code>。</li>
+</ul>
+<p>Fragmentation：</p>
+<ul>
+<li>Internal fragmentation：block 内部浪费。原因包括
+header/footer、alignment padding、分配策略不 split。</li>
+<li>External fragmentation：总 free memory 够，但没有一个连续 free block
+足够大。</li>
+</ul>
+<p>Block metadata：</p>
+<ul>
+<li><code>free(p)</code> 只拿到 payload 指针，但能释放整块，是因为 block
+前面有 header。</li>
+<li>header 通常记录 <code>size + allocated bit</code>。</li>
+<li>因为 block size 按 8-byte alignment，低位可用来存 allocated/free
+bit。</li>
+</ul>
+<p>Implicit free list：</p>
+<blockquote>
+<p>Heap 里的 blocks 连续排放，不存显式 next 指针；allocator 靠 header
+里的 size 跳到下一个 block。</p>
+</blockquote>
+<ul>
+<li>allocator 按 heap 中 block 的物理顺序扫描。</li>
+<li>first fit：找第一个够大的 free
+block，快但可能在前面留下小碎片。</li>
+<li>next fit：从上次搜索结束处继续找，可能更快，但 fragmentation
+可能更差。</li>
+<li>best fit：找最接近需求大小的
+block，通常利用率好一些，但搜索更慢。</li>
+</ul>
+<p>Splitting / coalescing：</p>
+<blockquote>
+<p>Splitting 是把大空闲块切小；coalescing
+是把相邻空闲块合大，减少碎片。</p>
+</blockquote>
+<ul>
+<li>splitting：free block 比请求大时，切成 allocated block + 剩余 free
+block。</li>
+<li>coalescing：<code>free</code> 后把相邻 free blocks 合并，避免 false
+fragmentation。</li>
+<li>boundary tag / footer：在 free block 尾部也存
+<code>size + allocated bit</code>，方便向前找 previous block，做到双向
+coalescing。</li>
+</ul>
+<p>Explicit free list：</p>
+<blockquote>
+<p>只把 free blocks 串成链表，分配时跳过 allocated
+blocks，搜索更快。</p>
+</blockquote>
+<p>
+<img src="../assets/vm/explicit-free-list-p45.png" alt="Explicit free list 图" width="480">
+</p>
+<ul>
+<li>只把 free blocks 串成链表，分配时不用扫 allocated blocks。</li>
+<li>指针存在 free block 的 payload 区域里。</li>
+<li>free list 顺序不一定等于内存地址顺序。</li>
+<li>LIFO 插入简单快；address-ordered 插入可能 fragmentation
+更好但要搜索。</li>
+</ul>
+<p>Segregated free list：</p>
+<blockquote>
+<p>按大小分类维护多条 free lists，先去合适 size class 里找空闲块。</p>
+</blockquote>
+<ul>
+<li>按 size class 维护多条 free lists。</li>
+<li>分配时先找对应大小类，不够再找更大的类。</li>
+<li>比全 heap 搜索快，也更接近 best fit。</li>
+</ul>
+<p>Buddy system：</p>
+<blockquote>
+<p>Buddy system 是 2 的幂大小块管理：分配时 split，释放时和空闲 buddy
+merge。</p>
+</blockquote>
+<ul>
+<li>Buddy system 是 size class 为 2 的幂、并且支持 buddy split/merge 的
+segregated free list 特例。</li>
+<li>物理内存按 2 的幂大小分层。</li>
+<li>申请 <code>m</code> pages 时，找满足
+<code>2^(n-1) &lt; m &lt;= 2^n</code> 的 <code>2^n</code> pages
+block。</li>
+<li>如果只有更大的 block，就不断 split 成两个 buddy。</li>
+<li>释放时，如果 buddy 也空闲，就 merge 回更大的 block。</li>
+<li>buddy 地址只差某一位：block size 是 <code>2^k</code> 时，buddy
+起始地址可理解为翻转第 <code>k</code> 位。</li>
+</ul>
+<p>例：从 32KB 空闲块中分配 5KB。</p>
+<pre class="text"><code>5KB 向上取整为 8KB
+[32KB free]
+-&gt; split -&gt; [16KB free][16KB free]
+-&gt; split one 16KB -&gt; [8KB used][8KB free][16KB free]</code></pre>
+<p>释放这个 8KB 时：</p>
+<pre class="text"><code>[8KB free][8KB free][16KB free]
+-&gt; merge -&gt; [16KB free][16KB free]
+-&gt; merge -&gt; [32KB free]</code></pre>
+<p>Slab allocator：</p>
+<blockquote>
+<p>Slab allocator 是固定尺寸对象池：从 buddy/OS 拿大块内存切成同样大小的
+slots，分配时拿一个，释放时还回去。</p>
+</blockquote>
+<ul>
+<li>先从 OS/buddy system 拿连续 pages 组成 slab。</li>
+<li>每个 slab 切成固定大小 slots，用于频繁分配同类小对象。</li>
+<li>分配：从对应 size/object pool 的 free list 取一个 slot。</li>
+<li>释放：把 slot 放回 free list。</li>
+<li>优点是快，且能减少特定对象大小的 internal fragmentation。</li>
+</ul>
+<p>常见 trade-off：</p>
+<ul>
+<li>快：简单策略、固定大小池、segregated/slab。</li>
+<li>省：best fit、coalescing、address-ordered，但维护成本更高。</li>
+<li>buddy 快且易 merge，但按 2 的幂向上取整会有 internal
+fragmentation。</li>
+</ul>
+<p>一句话：</p>
+<blockquote>
+<p>Allocator 题先想 block metadata，再想 free block 怎么找，最后想
+split/coalesce 如何影响 fragmentation。</p>
+</blockquote>
+<h2 id="考场检查清单">考场检查清单</h2>
+<ol type="1">
+<li>先写 page size，立刻得到 <code>VPO=PPO</code>。</li>
+<li>位数题：先算 <code>VPN/PPN</code>，再算
+<code>entries per PT page</code>。</li>
+<li>页表题：按“每一级多少 page-table pages”算。</li>
+<li>huge page：看是否 prune 某一级。</li>
+<li>VIPT：先算 <code>CI</code>、<code>CO</code>，再比
+<code>CI + CO &lt;= VPO</code>。</li>
+<li><code>mmap</code>：想的是“少一次 user-buffer copy + demand
+paging”。</li>
+<li>page fault：判断是 swapped out、on-demand，还是非法访问。</li>
+<li>swapping：先想 victim、dirty write-back、swap in、更新 PTE。</li>
+<li>clock：一时刻一时刻写，不跳步。</li>
+<li>allocator：先分 internal/external fragmentation，再看
+header、split/coalesce、buddy/slab。</li>
+</ol>
+<h2 id="高频术语">高频术语</h2>
+<ul>
+<li>Virtual address (VA)：虚拟地址。</li>
+<li>Physical address (PA)：物理地址。</li>
+<li>VPN / VPO：虚拟页号 / 页内偏移。</li>
+<li>PPN / PPO：物理页号 / 页内偏移。</li>
+<li>Page table / PTE：页表 / 页表项。</li>
+<li>MMU：内存管理单元。</li>
+<li>TLB：地址翻译缓存。</li>
+<li>Page fault：缺页异常。</li>
+<li>Swapping：换入/换出。</li>
+<li>Swap in / swap out：从磁盘换入 / 换出到磁盘。</li>
+<li>Page replacement：页面替换。</li>
+<li>Dirty page：脏页，被写过、换出前要写回。</li>
+<li>Working set：工作集。</li>
+<li>Thrashing：频繁换页导致系统抖动。</li>
+<li>Demand paging：按需分页。</li>
+<li>Segmentation fault / SIGSEGV：段错误。</li>
+<li>Huge page：大页。</li>
+<li>VIPT: Virtually Indexed, Physically Tagged。</li>
+<li><code>mmap</code>：内存映射。</li>
+<li>COW: Copy-on-Write，写时复制。</li>
+<li>Clock algorithm：时钟替换算法。</li>
+<li>Internal fragmentation：块内部浪费。</li>
+<li>External fragmentation：总空闲够但没有连续大块。</li>
+<li>Header / footer：记录 block size、allocated bit 等 metadata。</li>
+<li>Coalescing：合并相邻 free blocks。</li>
+<li>Buddy system：伙伴系统。</li>
+<li>Slab allocator：固定大小对象池分配器。</li>
+</ul>
+</body>
+</html>
