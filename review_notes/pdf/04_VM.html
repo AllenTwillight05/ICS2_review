@@ -35,10 +35,6 @@
       }
     }
     @media print {
-      @page {
-        size: A4;
-        margin: 10mm;
-      }
       html {
         background-color: white;
       }
@@ -46,8 +42,6 @@
         background-color: transparent;
         color: black;
         font-size: 12pt;
-        max-width: none;
-        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -292,8 +286,8 @@ PPN bits = PA bits - p</code></pre>
 </blockquote>
 <h2 id="vm-完整链路">VM 完整链路</h2>
 <p>
-<img src="../../assets/vm/tlb-hit-p56.png" alt="TLB hit 链路图" width="320">
-<img src="../../assets/vm/tlb-miss-p57.png" alt="TLB miss 链路图" width="320">
+<img src="../../assets/vm/tlb-hit-p56.png" alt="TLB hit 链路图" width="280">
+<img src="../../assets/vm/tlb-miss-p57.png" alt="TLB miss 链路图" width="280">
 </p>
 <p>
 <img src="../../assets/vm/four-level-page-table-p74.png" alt="4-level page table 链路图" width="650">
@@ -582,12 +576,12 @@ because it avoids all syscalls.</p>
 <h3 id="clock-algorithm">9. Clock algorithm</h3>
 <p>来源：<code>courseware/2-18-vm-part2_*.pdf</code>；复习课点名。</p>
 <p>
-<img src="../../assets/vm/FIFO.png" alt="FIFO page replacement" width="320">
-<img src="../../assets/vm/SECOND_CHANCE.png" alt="Second chance page replacement" width="320">
+<img src="../../assets/vm/FIFO.png" alt="FIFO page replacement" width="280">
+<img src="../../assets/vm/SECOND_CHANCE.png" alt="Second chance page replacement" width="280">
 </p>
 <p>
-<img src="../../assets/vm/LRU.png" alt="LRU page replacement" width="320">
-<img src="../../assets/vm/CLOCK.png" alt="Clock page replacement" width="320">
+<img src="../../assets/vm/LRU.png" alt="LRU page replacement" width="280">
+<img src="../../assets/vm/CLOCK.png" alt="Clock page replacement" width="280">
 </p>
 <p>Clock 是 LRU 的近似：</p>
 <ul>
