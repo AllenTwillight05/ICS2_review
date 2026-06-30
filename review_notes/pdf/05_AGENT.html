@@ -246,91 +246,212 @@
 </header>
 <h1 id="agent-开卷速查">05 Agent 开卷速查</h1>
 <h2 id="考场定位">考场定位</h2>
-<p>本章按“<strong>AgentLab 涉及的 Agent 概念为主，补充 Agent
-基本概念</strong>”准备。不要背工程命令，重点会解释：</p>
-<pre class="text"><code>为什么 Agent = LLM + Harness？
-为什么要 loop / tools / memory / skill / trace / subagent？
-AgentLab 的设计分别对应哪些 Agent 概念？</code></pre>
-<h2 id="考场小目录">考场小目录</h2>
+<p>Agent 的考试重点来自三份 tutorial PPT：</p>
+<ol type="1">
+<li><code>tutorial-code-agent.pptx</code>：Code Agent
+怎么用、怎么抽象。</li>
+<li><code>tutorial-long-run-agent.pptx</code>：Long-run Agent，reactive
+-&gt; proactive。</li>
+<li><code>tutorial-agent-memory.pptx</code>：Agent Memory，持久化记忆和
+memory system。</li>
+</ol>
+<p>复习目标不是背项目命令，而是会解释：</p>
+<pre class="text"><code>Agent = LLM + Harness
+Loop / Tool / Skill / Memory 为什么构成 Agent
+Code Agent 和 Long-run Agent 有什么区别
+Agent Memory 怎么存、写、取、更新、淘汰
+AgentLab / mini-agent-demo 如何对应这些概念</code></pre>
+<h2 id="目录">目录</h2>
+<p>没有页码时，直接用“知识点编号”定位下面对应小节；考场遇到题目关键词，先按本表跳转，再套用第
+18 节简答模板。</p>
 <table>
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
 </colgroup>
 <thead>
 <tr>
-<th>题目</th>
-<th>直接看</th>
+<th>知识点编号</th>
+<th>标题</th>
+<th>常见题目关键词</th>
 <th>必写词</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>AgentLab 说明了什么</td>
-<td><a href="#1-agentlab-概念总表">1. AgentLab 概念总表</a></td>
-<td>LLM + Harness，JSON loop，tools，memory，skill，trace</td>
+<td><a href="#1-核心模型">1</a></td>
+<td>核心模型</td>
+<td>Agent 是什么；为什么不只是 LLM</td>
+<td><code>LLM + Harness</code>，goal，loop</td>
 </tr>
 <tr>
-<td>Agent 是什么</td>
-<td><a href="#2-agent-基本定义">2. Agent 基本定义</a></td>
-<td><code>Agent = LLM + Harness</code></td>
+<td><a href="#2-loop--tool--skill">2</a></td>
+<td>Loop / Tool / Skill</td>
+<td>Agent 如何行动；工具和技能</td>
+<td>main loop，tool list，skill.md</td>
 </tr>
 <tr>
-<td>Agent loop</td>
-<td><a href="#3-agent-loop--react">3. Agent Loop / ReAct</a></td>
-<td>perceive/think/act/observe，reason + act</td>
+<td><a href="#3-code-agent-演进">3</a></td>
+<td>Code Agent 演进</td>
+<td>ChatBot 到 Agent；AI 编程形态变化</td>
+<td>ChatBot, Copilot, Agent Act</td>
 </tr>
 <tr>
-<td>tool calling</td>
-<td><a href="#4-tools--function-calling">4. Tools / Function
-Calling</a></td>
-<td>intent，protocol，permission，observation</td>
+<td><a href="#4-code-agent-三种形态">4</a></td>
+<td>Code Agent 三种形态</td>
+<td>Tab / IDE / CLI 区别</td>
+<td>Tab Complete, IDE Agent, CLI Agent</td>
 </tr>
 <tr>
-<td>JSON 协议</td>
-<td><a href="#5-protocol--结构化输出">5. Protocol / 结构化输出</a></td>
-<td><code>tool_call</code>，<code>final</code>，<code>parse_error</code></td>
+<td><a href="#5-tool--provider--model-三层抽象">5</a></td>
+<td>Tool / Provider / Model 三层抽象</td>
+<td>工具、平台、模型怎么区分</td>
+<td>Tool, Provider/API/Billing, Model</td>
 </tr>
 <tr>
-<td>memory</td>
-<td><a href="#6-memory">6. Memory</a></td>
-<td>context compact，persistent memory，retrieval</td>
+<td><a href="#6-prompt-模板">6</a></td>
+<td>Prompt 模板</td>
+<td>Prompt 怎么写；如何让 Agent 闭环</td>
+<td>Goal, Context, Constraints, Output, Verification</td>
 </tr>
 <tr>
-<td>skill</td>
-<td><a href="#7-skill--经验库">7. Skill / 经验库</a></td>
-<td>摘要进 prompt，正文按需加载</td>
+<td><a href="#7-mini-agent--agentlab">7</a></td>
+<td>Mini-Agent / AgentLab</td>
+<td>mini-agent-demo；JSON tool protocol</td>
+<td>loop，tools，skill，memory，trace</td>
 </tr>
 <tr>
-<td>subagent / multi-agent</td>
-<td><a href="#8-subagent--multi-agent">8. Subagent /
-Multi-Agent</a></td>
-<td>delegation，分工，并行，校验</td>
+<td><a href="#8-long-run-agent">8</a></td>
+<td>Long-run Agent</td>
+<td>Code Agent vs Long-run Agent</td>
+<td>reactive -&gt; proactive</td>
 </tr>
 <tr>
-<td>trace / evaluation</td>
-<td><a href="#9-trace--可观测性">9. Trace / 可观测性</a></td>
-<td>llm_response，tool_call，final</td>
+<td><a href="#9-时序能力cron--heartbeat">9</a></td>
+<td>时序能力：Cron / Heartbeat</td>
+<td>定时任务；主动唤醒；外部消息</td>
+<td>Cron, Heartbeat, Gateway</td>
 </tr>
 <tr>
-<td>可靠性</td>
-<td><a href="#10-可靠性问题">10. 可靠性问题</a></td>
-<td>hallucination，parse error，stale memory</td>
+<td><a href="#10-memory-vs-context">10</a></td>
+<td>Memory vs Context</td>
+<td>记忆和上下文区别；为什么需要持久记忆</td>
+<td>context 有限，memory 持久</td>
 </tr>
 <tr>
+<td><a href="#11-memory-管理五问">11</a></td>
+<td>Memory 管理五问</td>
+<td>memory 怎么存、写、读、改、淘汰</td>
+<td>Storage, Write, Retrieval, Update, Evict</td>
+</tr>
+<tr>
+<td><a href="#12-检索和淘汰策略">12</a></td>
+<td>检索和淘汰策略</td>
+<td>Retrieval / Eviction；如何召回记忆</td>
+<td>keyword/vector/graph/hybrid，recency/frequency/relevance/heat</td>
+</tr>
+<tr>
+<td><a href="#13-memgpt">13</a></td>
+<td>MemGPT</td>
+<td>virtual context；OS 类比</td>
+<td>main context, external context, function call</td>
+</tr>
+<tr>
+<td><a href="#14-memoryos">14</a></td>
+<td>MemoryOS</td>
+<td>分层 memory system</td>
+<td>STM, MTM, LPM</td>
+</tr>
+<tr>
+<td><a href="#15-mem0">15</a></td>
+<td>Mem0</td>
+<td>生产级 memory service；memory update</td>
+<td>ADD/UPDATE/DELETE/NOOP</td>
+</tr>
+<tr>
+<td><a href="#16-自我进化learning-loop">16</a></td>
+<td>自我进化：Learning Loop</td>
+<td>Agent 如何越用越聪明</td>
+<td>memory -&gt; skill -&gt; optimize -&gt; retrieve</td>
+</tr>
+<tr>
+<td><a href="#17-subagent--multiagent">17</a></td>
+<td>SubAgent / MultiAgent</td>
+<td>子任务分发；多 Agent 协作</td>
+<td>并行，工作看板，输入输出，校验</td>
+</tr>
+<tr>
+<td><a href="#18-简答模板">18</a></td>
 <td>简答模板</td>
-<td><a href="#11-简答模板">11. 简答模板</a></td>
-<td>直接套句</td>
+<td>考场直接套句</td>
+<td>按题目选 1-2 段改写</td>
+</tr>
+<tr>
+<td><a href="#19-高频词">19</a></td>
+<td>高频词</td>
+<td>最后快速扫关键词</td>
+<td>背关键词，不背长段落</td>
+</tr>
+<tr>
+<td><a href="#20-考场最后-20-秒">20</a></td>
+<td>考场最后 20 秒</td>
+<td>临交卷前补核心词</td>
+<td>总纲、形态、memory、三系统</td>
 </tr>
 </tbody>
 </table>
-<p>来源优先级：<code>ICS-AgentLab.pptx</code> /
-<code>AgentLab/README.md</code> &gt; <code>2-16-agent_*.pdf</code> &gt;
-<code>review.pdf</code> &gt; ReAct / Toolformer / Voyager /
-Reflexion</p>
-<h2 id="agentlab-概念总表">1. AgentLab 概念总表</h2>
-<p>AgentLab 不是单纯项目说明，它把 Agent 的核心概念具体化：</p>
+<p>来源优先级：<code>tutorial-code-agent.pptx</code> /
+<code>tutorial-long-run-agent.pptx</code> /
+<code>tutorial-agent-memory.pptx</code> &gt;
+<code>ICS-AgentLab.pptx</code> / AgentLab README &gt;
+<code>review.pdf</code></p>
+<h2 id="核心模型">1. 核心模型</h2>
+<pre class="text"><code>Agent = LLM + Harness</code></pre>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>组成</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LLM</code></td>
+<td>理解任务、推理、规划、生成行动意图</td>
+</tr>
+<tr>
+<td><code>Harness</code></td>
+<td>维护上下文、暴露工具、执行动作、检查权限、记录过程、处理错误</td>
+</tr>
+<tr>
+<td><code>Goal</code></td>
+<td>Agent 围绕目标持续推进，不是一次性聊天</td>
+</tr>
+<tr>
+<td><code>Loop</code></td>
+<td>观察 -&gt; 思考 -&gt; 行动 -&gt; 再观察</td>
+</tr>
+</tbody>
+</table>
+<p>一句话：</p>
+<blockquote>
+<p>Agent 不是“会聊天的模型”，而是 LLM 在 harness 支撑下，围绕 goal
+不断观察、决策、行动、反馈的系统。</p>
+</blockquote>
+<p>为什么不能只有 LLM：</p>
+<blockquote>
+<p>LLM
+只能产生文本或行动意图；真正完成任务需要工具、状态、权限、执行环境、反馈闭环和持久记忆，这些由
+harness 提供。</p>
+</blockquote>
+<h2 id="loop-tool-skill">2. Loop / Tool / Skill</h2>
+<p>三件事是 Code Agent / Mini-Agent 的基础：</p>
 <table>
 <colgroup>
 <col style="width: 33%" />
@@ -339,131 +460,197 @@ Reflexion</p>
 </colgroup>
 <thead>
 <tr>
-<th>AgentLab 设计</th>
-<th>对应 Agent 概念</th>
+<th>概念</th>
+<th>课件说法</th>
 <th>考场解释</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>普通 Chat Completion</td>
-<td>LLM 只负责推理/生成</td>
-<td>不依赖 SDK 自带 agent 能力</td>
+<td><code>Loop</code></td>
+<td>Agent 核心是交互式 main loop</td>
+<td>不断调用 LLM，解析行动，执行工具，回填结果</td>
 </tr>
 <tr>
-<td>禁用 native tool calling</td>
-<td>harness 自己控制工具协议</td>
-<td>说明 Agent 不是 API 魔法，而是协议 + 调度</td>
+<td><code>Tool</code></td>
+<td>调用外部工具，与环境交互</td>
+<td>bash、本地指令、MCP 外部工具、文件系统、API</td>
 </tr>
 <tr>
-<td>手写 JSON：<code>tool_call</code> / <code>final</code></td>
-<td>structured action protocol</td>
-<td>LLM 输出行动意图，harness 解析执行</td>
-</tr>
-<tr>
-<td><code>Agent.run_turn(...)</code> 多轮循环</td>
-<td>agent loop / ReAct</td>
-<td>每轮 LLM -&gt; action -&gt; observation</td>
-</tr>
-<tr>
-<td><code>read_file/write_file/edit_file/list_files/bash</code></td>
-<td>tool use</td>
-<td>让 Agent 能访问和改变外部环境</td>
-</tr>
-<tr>
-<td>workspace 限制</td>
-<td>permission / safety</td>
-<td>工具执行必须有边界</td>
-</tr>
-<tr>
-<td><code>load_skill</code></td>
-<td>skill on-demand loading</td>
-<td>流程说明不全塞 prompt，需要时再读</td>
-</tr>
-<tr>
-<td><code>save_memory/read_memory</code></td>
-<td>persistent memory / retrieval</td>
-<td>跨 session 保存和读取稳定事实</td>
-</tr>
-<tr>
-<td>context compact</td>
-<td>short-term context management</td>
-<td>当前对话太长时压缩，不等于长期记忆</td>
-</tr>
-<tr>
-<td><code>ask_subagent</code></td>
-<td>delegation / multi-agent</td>
-<td>把边界清晰的小任务交给子 agent</td>
-</tr>
-<tr>
-<td>trace</td>
-<td>observability / evaluation</td>
-<td>不只看最终答案，还看过程</td>
-</tr>
-<tr>
-<td>token efficiency</td>
-<td>context / prompt management</td>
-<td>长任务中要控制 token 和工具次数</td>
+<td><code>Skill</code></td>
+<td>把特定领域能力/知识包装成 <code>skill.md</code></td>
+<td>流程说明按需加载，不全部塞进 prompt</td>
 </tr>
 </tbody>
 </table>
-<p>一句话总括：</p>
-<blockquote>
-<p>AgentLab 考察的是 Agent 的 harness：用普通 LLM
-加上手写协议、工具、memory、skill、subagent 和
-trace，形成可控的任务执行循环。</p>
-</blockquote>
-<h2 id="agent-基本定义">2. Agent 基本定义</h2>
-<pre class="text"><code>Agent = LLM + Harness</code></pre>
-<ul>
-<li><code>LLM</code>：理解任务、推理、规划、决定下一步。</li>
-<li><code>Harness</code>：上下文、工具、权限、记忆、执行、日志、错误恢复。</li>
-<li><code>Goal</code>：围绕目标持续推进，不是一次性聊天。</li>
-<li><code>Loop</code>：感知 -&gt; 推理 -&gt; 行动 -&gt; 观察 -&gt;
-再循环。</li>
-</ul>
-<p>为什么不能只有 LLM：</p>
-<blockquote>
-<p>LLM
-只能产生文本/行动意图；真正完成任务还需要工具、状态、权限、执行和反馈闭环，这些都属于
-harness。</p>
-</blockquote>
-<p>五个展开点：</p>
+<p>Loop 最小形态：</p>
+<pre class="text"><code>User Task -&gt; LLM -&gt; Action/Tool Call -&gt; Tool Result -&gt; LLM -&gt; ... -&gt; Final</code></pre>
+<p>AgentLab / mini-agent-demo 对应：</p>
 <table>
 <thead>
 <tr>
-<th>点</th>
-<th>写什么</th>
+<th>练习/实验</th>
+<th>对应概念</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>工具</td>
-<td>读文件、shell、API、数据库</td>
+<td><code>s01-agent-loop</code></td>
+<td>实现 Agent main loop</td>
 </tr>
 <tr>
-<td>状态</td>
-<td>历史消息、中间结果、失败重试</td>
+<td><code>s02-tool-use</code></td>
+<td>实现文件操作 tools</td>
 </tr>
 <tr>
-<td>权限</td>
-<td>workspace 限制、sandbox、越权控制</td>
+<td><code>s03-load-skill</code></td>
+<td>编写 skill / 测试 / 修 bug</td>
 </tr>
 <tr>
-<td>执行</td>
-<td>把文本意图变成真实工具/API 调用</td>
-</tr>
-<tr>
-<td>反馈</td>
-<td>把结果回填上下文，进入下一轮推理</td>
+<td>AgentLab</td>
+<td>loop + tool + skill + memory + trace 的综合实验</td>
 </tr>
 </tbody>
 </table>
-<h2 id="agent-loop-react">3. Agent Loop / ReAct</h2>
-<p>课件四步：</p>
-<pre class="text"><code>Perception -&gt; Cognition -&gt; Action -&gt; Observation</code></pre>
-<p>AgentLab 里的实际形态：</p>
-<pre class="text"><code>LLM response -&gt; parse JSON -&gt; tool_call -&gt; tool result -&gt; append observation -&gt; next LLM response</code></pre>
+<h2 id="code-agent-演进">3. Code Agent 演进</h2>
+<p>课件主线：</p>
+<pre class="text"><code>ChatBot Answer -&gt; Copilot Suggest -&gt; Agent Act</code></pre>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>阶段</th>
+<th>输入</th>
+<th>输出</th>
+<th>关键词</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ChatBot Answer</td>
+<td>一句问题</td>
+<td>一段回答</td>
+<td>搜索、问答、头脑风暴、Ctrl C/V 工程</td>
+</tr>
+<tr>
+<td>Copilot Suggest</td>
+<td>局部上下文</td>
+<td>一小段代码建议</td>
+<td>补全、改写、Tab 工程</td>
+</tr>
+<tr>
+<td>Agent Act</td>
+<td>一个任务</td>
+<td>执行过程 + 结果</td>
+<td>完整项目上下文、TODO、LOOP、TOOL、Prompt 工程</td>
+</tr>
+</tbody>
+</table>
+<p>考场句：</p>
+<blockquote>
+<p>Code Agent
+的变化不是“回答更长”，而是从回答问题变成围绕任务执行动作：能看项目上下文、调用工具、多轮迭代并交付结果。</p>
+</blockquote>
+<h2 id="code-agent-三种形态">4. Code Agent 三种形态</h2>
+<pre class="text"><code>Tab Complete &gt;&gt; IDE Agent &gt;&gt; CLI Agent</code></pre>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>形态</th>
+<th>输入</th>
+<th>输出</th>
+<th>优点</th>
+<th>适合</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tab Complete</td>
+<td>局部上下文</td>
+<td>短代码片段</td>
+<td>快、自然、低风险</td>
+<td>函数内、样板代码、微改动</td>
+</tr>
+<tr>
+<td>IDE Agent</td>
+<td>自然语言 feature</td>
+<td>跨文件修改</td>
+<td>开发小功能很快</td>
+<td>小项目扩展、组件重构、bug 修复</td>
+</tr>
+<tr>
+<td>CLI Agent</td>
+<td>仓库级任务</td>
+<td>最终任务结果</td>
+<td>执行与验证闭环</td>
+<td>测试、搭建项目、仓库级任务</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tab-complete">Tab Complete</h3>
+<p>要点：</p>
+<ul>
+<li>根据当前文件和打开标签页给建议。</li>
+<li>需要极高响应速度和快速上下文组装。</li>
+<li>Copilot 依赖当前/活动文件；定义文件也打开时更准。</li>
+<li>Trae CUE 会对 workspace 建本地索引，结合语言服务器和向量索引。</li>
+</ul>
+<h3 id="ide-agent">IDE Agent</h3>
+<p>要点：</p>
+<ul>
+<li>基于当前代码仓库辅助开发。</li>
+<li>可以快速指定上下文。</li>
+<li>具备 Agent 的完整能力，但仍主要在 IDE 场景里工作。</li>
+</ul>
+<h3 id="cli-agent">CLI Agent</h3>
+<p>要点：</p>
+<ul>
+<li>真正的 Vibe Coding：输入意图，让 Agent 操作项目。</li>
+<li>典型工具：Codex CLI、Claude Code CLI、Hermes CLI。</li>
+<li>课件句：<code>Bash is all agents need</code>。</li>
+</ul>
+<p>IDE Agent vs CLI Agent：</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>IDE Agent</th>
+<th>CLI Agent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>权限边界</td>
+<td>通常围绕 IDE / 打开的项目</td>
+<td>能读写文件、跑命令、查网络</td>
+</tr>
+<tr>
+<td>工具能力</td>
+<td>IDE 内补全、重构、对话</td>
+<td>shell、文件系统、终端、web 等</td>
+</tr>
+<tr>
+<td>一句话</td>
+<td>AI 辅助你写代码</td>
+<td>AI 替你操作电脑</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tool-provider-model-三层抽象">5. Tool / Provider / Model
+三层抽象</h2>
+<p>课件强调不要把这些混在一起：</p>
 <table>
 <colgroup>
 <col style="width: 33%" />
@@ -472,418 +659,567 @@ harness。</p>
 </colgroup>
 <thead>
 <tr>
-<th>步骤</th>
-<th>通用概念</th>
-<th>AgentLab 对应</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Perception</td>
-<td>读输入、规则、memory、环境状态</td>
-<td>user input + system prompt + memory keys + tool results</td>
-</tr>
-<tr>
-<td>Cognition</td>
-<td>分析现状、定计划、决定下一步</td>
-<td>LLM 生成 JSON</td>
-</tr>
-<tr>
-<td>Action</td>
-<td>调工具、写文件、跑命令、委托任务</td>
-<td><code>tool_call</code> / <code>ask_subagent</code></td>
-</tr>
-<tr>
-<td>Observation</td>
-<td>收结果、错误、状态变化</td>
-<td>tool result 写回 messages</td>
-</tr>
-</tbody>
-</table>
-<p>ReAct：</p>
-<pre class="text"><code>Reasoning + Acting interleaving</code></pre>
-<ul>
-<li>reasoning：跟踪目标、更新计划、处理异常。</li>
-<li>action：调用工具/访问环境。</li>
-<li>observation：把外部结果带回下一轮推理。</li>
-</ul>
-<p>考场句：</p>
-<blockquote>
-<p>Agent loop 让 LLM 不只是一次性回答，而是在 observation
-反馈下不断调整行动；ReAct 强调 reasoning 和 acting 交错进行。</p>
-</blockquote>
-<h2 id="tools-function-calling">4. Tools / Function Calling</h2>
-<p>核心链路：</p>
-<pre class="text"><code>LLM 产出 action intent -&gt; Harness 按协议解析 -&gt; Tool 执行 -&gt; Observation 回填</code></pre>
-<p>AgentLab 常见工具：</p>
-<table>
-<thead>
-<tr>
-<th>工具</th>
-<th>概念作用</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>read_file</code></td>
-<td>获取外部信息</td>
-</tr>
-<tr>
-<td><code>write_file</code></td>
-<td>改变环境 / 产出结果</td>
-</tr>
-<tr>
-<td><code>edit_file</code></td>
-<td>精确修改</td>
-</tr>
-<tr>
-<td><code>list_files</code></td>
-<td>探索环境</td>
-</tr>
-<tr>
-<td><code>bash</code></td>
-<td>执行命令</td>
-</tr>
-<tr>
-<td><code>load_skill</code></td>
-<td>按需加载流程</td>
-</tr>
-<tr>
-<td><code>save_memory</code></td>
-<td>保存长期事实</td>
-</tr>
-<tr>
-<td><code>read_memory</code></td>
-<td>检索长期事实</td>
-</tr>
-<tr>
-<td><code>ask_subagent</code></td>
-<td>委托子任务</td>
-</tr>
-</tbody>
-</table>
-<p>为什么需要工具：</p>
-<ul>
-<li>LLM 内部知识不够、可能过时或不精确。</li>
-<li>文件、命令、API 等外部状态必须实际访问。</li>
-<li>工具结果作为 observation，能降低幻觉。</li>
-<li>Agent 要完成任务，往往需要改变环境，而不仅是说话。</li>
-</ul>
-<p>工具使用四问：</p>
-<table>
-<thead>
-<tr>
-<th>问题</th>
-<th>答法</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>何时调用</td>
-<td>需要外部信息、精确结果、改变环境</td>
-</tr>
-<tr>
-<td>调哪个</td>
-<td>根据 tool description / schema</td>
-</tr>
-<tr>
-<td>参数怎么传</td>
-<td>按协议输出结构化参数</td>
-</tr>
-<tr>
-<td>结果怎么用</td>
-<td>作为 observation 更新答案或计划</td>
-</tr>
-</tbody>
-</table>
-<h2 id="protocol-结构化输出">5. Protocol / 结构化输出</h2>
-<p>AgentLab 禁用 SDK native tool calling，要求手写 JSON 协议。</p>
-<p>典型格式：</p>
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;tool_call&quot;</span><span class="fu">,</span> <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;read_file&quot;</span><span class="fu">,</span> <span class="dt">&quot;arguments&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;path&quot;</span><span class="fu">:</span> <span class="st">&quot;a.txt&quot;</span><span class="fu">}}</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;final&quot;</span><span class="fu">,</span> <span class="dt">&quot;content&quot;</span><span class="fu">:</span> <span class="st">&quot;answer for the user&quot;</span><span class="fu">}</span></span></code></pre></div>
-<p>为什么需要 protocol：</p>
-<ul>
-<li>让自然语言意图变成可执行动作。</li>
-<li>让 harness 能解析工具名和参数。</li>
-<li>限制 LLM 只能在允许格式内行动。</li>
-<li>方便记录 trace 和做错误恢复。</li>
-</ul>
-<p>常见错误：</p>
-<table>
-<thead>
-<tr>
-<th>错误</th>
-<th>应对</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>输出 Markdown 代码块</td>
-<td>强化“只输出 JSON”，解析时容错</td>
-</tr>
-<tr>
-<td>JSON 不合法</td>
-<td>记录 <code>parse_error</code>，让模型修复</td>
-</tr>
-<tr>
-<td>工具名错</td>
-<td>tool description / registry 保持一致</td>
-</tr>
-<tr>
-<td>参数错</td>
-<td>schema 清楚，错误反馈给模型</td>
-</tr>
-<tr>
-<td>一直不行动</td>
-<td>prompt 要求必要时调用工具</td>
-</tr>
-</tbody>
-</table>
-<p>一句话：</p>
-<blockquote>
-<p>Protocol 是 LLM 和 harness 之间的接口：LLM 输出结构化 action，harness
-负责解析、执行和回填 observation。</p>
-</blockquote>
-<h2 id="memory">6. Memory</h2>
-<p>AgentLab 最容易考的边界：</p>
-<pre class="text"><code>context compact != persistent memory</code></pre>
-<table>
-<thead>
-<tr>
-<th>机制</th>
-<th>负责什么</th>
-<th>不该做什么</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>context compact</code></td>
-<td>压缩当前 session 旧消息</td>
-<td>不写入长期 memory</td>
-</tr>
-<tr>
-<td><code>persistent memory</code></td>
-<td>跨 session 的稳定事实/偏好</td>
-<td>不保存临时噪声</td>
-</tr>
-<tr>
-<td><code>retrieval</code></td>
-<td>按 key/相关性取记忆</td>
-<td>不要全部塞进 prompt</td>
-</tr>
-</tbody>
-</table>
-<p>为什么 memory 要分层：</p>
-<blockquote>
-<p>context window 容量有限；长期信息不能全部塞进
-prompt，只能按需读取、必要时压缩、旧信息可替换或更新。</p>
-</blockquote>
-<p>Memory 类型：</p>
-<table>
-<thead>
-<tr>
-<th>类型</th>
+<th>层</th>
+<th>是什么</th>
 <th>例子</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>short-term memory</td>
-<td>当前任务的计划、中间结果、tool observation</td>
+<td><code>Tool</code></td>
+<td>具体 Agent 产品/运行环境</td>
+<td>Trae, Claude Code, OpenCode, Codex</td>
 </tr>
 <tr>
-<td>long-term memory</td>
-<td>用户偏好、项目事实、跨 session 信息</td>
+<td><code>Provider</code></td>
+<td>模型提供商 / API / 计费平台</td>
+<td>OpenAI, Anthropic, DeepSeek, OpenRouter</td>
 </tr>
 <tr>
-<td>episodic memory</td>
-<td>做过哪些步骤、遇到什么失败</td>
-</tr>
-<tr>
-<td>procedural memory</td>
-<td>某类任务怎么做，接近 skill</td>
+<td><code>Model</code></td>
+<td>实际被调用的模型</td>
+<td>DeepSeek V4, Claude Sonnet, GPT, hy3-preview</td>
 </tr>
 </tbody>
 </table>
-<p>AgentLab memory 要点：</p>
+<p>常见区分：</p>
 <ul>
-<li>system prompt 只放 memory key 列表，不放全部 memory。</li>
-<li>需要长期事实时调用 <code>read_memory</code>。</li>
-<li>用户要求 remember/update/persist 时调用
-<code>save_memory</code>。</li>
-<li>更新后新事实优先。</li>
-<li>没证据就说未知，不编造。</li>
+<li>Tool：IDE Agent vs CLI Agent。</li>
+<li>Provider：模型提供商 vs 平台聚合商。</li>
+<li>付费：API token vs Code Plan。</li>
+<li>Model：闭源顶级模型 vs 顶尖开源模型。</li>
 </ul>
-<h2 id="skill-经验库">7. Skill / 经验库</h2>
-<p>Skill 是可复用流程，不是答案库。</p>
-<p>AgentLab 机制：</p>
-<table>
-<thead>
-<tr>
-<th>设计</th>
-<th>概念</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>skills/&lt;name&gt;/SKILL.md</code></td>
-<td>skill 文档</td>
-</tr>
-<tr>
-<td>front matter <code>name/description</code></td>
-<td>skill 摘要</td>
-</tr>
-<tr>
-<td>system prompt 只放摘要</td>
-<td>减少上下文</td>
-</tr>
-<tr>
-<td><code>load_skill</code> 读取全文</td>
-<td>按需加载</td>
-</tr>
-<tr>
-<td>skill 写 checklist / output requirements</td>
-<td>稳定行动流程</td>
-</tr>
-</tbody>
-</table>
-<p>Skill 和 memory 区别：</p>
-<table>
-<thead>
-<tr>
-<th>项</th>
-<th>Memory</th>
-<th>Skill</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>保存什么</td>
-<td>事实、偏好、历史经验</td>
-<td>可复用流程、checklist、操作规范</td>
-</tr>
-<tr>
-<td>何时用</td>
-<td>需要某个事实时</td>
-<td>遇到某类任务时</td>
-</tr>
-<tr>
-<td>作用</td>
-<td>记住信息</td>
-<td>指导怎么做</td>
-</tr>
-</tbody>
-</table>
 <p>考场句：</p>
 <blockquote>
-<p>Skill 是按需加载的任务流程。摘要放进 prompt，正文需要时再读，可以减少
-token，并让 Agent 按 checklist 稳定执行。</p>
+<p>Agent 工具、模型提供商和模型本身是三层抽象：工具负责交互和
+harness，provider 负责 API/计费/路由，model 负责生成和推理。</p>
 </blockquote>
-<h2 id="subagent-multi-agent">8. Subagent / Multi-Agent</h2>
-<p>AgentLab 的 <code>ask_subagent</code> 对应 subagent / multi-agent
-delegation。</p>
-<p>适用场景：</p>
-<ul>
-<li>子任务边界清晰。</li>
-<li>输入输出明确。</li>
-<li>主上下文不想塞太多细节。</li>
-<li>需要分工、并行、复核。</li>
-</ul>
-<p>好处：</p>
+<h2 id="prompt-模板">6. Prompt 模板</h2>
+<p>课件 prompt template：</p>
+<pre class="text"><code>请基于当前项目完成 &lt;Goal&gt;。
+约束：&lt;Constraints&gt;。
+最终请 &lt;Output&gt;，
+并用 &lt;Verification&gt; 验证。</code></pre>
+<p>五要素：</p>
 <table>
 <thead>
 <tr>
-<th>好处</th>
+<th>要素</th>
+<th>问题</th>
 <th>写法</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>分工</td>
-<td>不同 agent 负责不同子任务</td>
+<td><code>Goal</code></td>
+<td>到底要完成什么</td>
+<td>明确任务目标</td>
 </tr>
 <tr>
-<td>并行</td>
-<td>多个子任务同时推进</td>
+<td><code>Context</code></td>
+<td>正在读哪个项目/文件</td>
+<td>指定仓库、模块、相关文件</td>
 </tr>
 <tr>
-<td>通信</td>
-<td>agent 间交换中间结果</td>
+<td><code>Constraints</code></td>
+<td>不要改什么/不要引入什么</td>
+<td>限制范围、依赖、风格</td>
 </tr>
 <tr>
-<td>协调</td>
-<td>主 agent 汇总和合并结果</td>
+<td><code>Output</code></td>
+<td>希望交付什么</td>
+<td>代码、文档、测试、总结</td>
 </tr>
 <tr>
-<td>互查</td>
-<td>一个生成，一个检查</td>
-</tr>
-<tr>
-<td>降低上下文复杂度</td>
-<td>子 agent 只看局部信息</td>
+<td><code>Verification</code></td>
+<td>怎么判断做对了</td>
+<td>跑测试、编译、截图、人工检查点</td>
 </tr>
 </tbody>
 </table>
-<p>风险：</p>
-<ul>
-<li>token 成本上升。</li>
-<li>角色不清会互相推诿。</li>
-<li>子 agent 输出错误会污染主 agent。</li>
-<li>需要明确停止条件和输出格式。</li>
-</ul>
-<p>一句话：</p>
+<p>考场句：</p>
 <blockquote>
-<p>Subagent 是把局部任务委托出去，主 agent
-只接收整理后的结果；multi-agent 的关键是分工、通信、协调和校验。</p>
+<p>好 prompt 不是多写废话，而是把 goal、context、constraints、output 和
+verification 交代清楚，让 Agent 能闭环执行。</p>
 </blockquote>
-<h2 id="trace-可观测性">9. Trace / 可观测性</h2>
-<p>AgentLab 强调 trace，因为评测不只看最终答案，也看过程。</p>
-<p>至少记录：</p>
-<ul>
-<li><code>llm_response</code></li>
-<li><code>tool_call</code></li>
-<li><code>parse_error</code></li>
-<li><code>context_compacted</code></li>
-<li><code>memory_write</code></li>
-<li><code>memory_retrieve</code></li>
-<li><code>final</code></li>
-</ul>
-<p>Trace 的作用：</p>
+<h2 id="mini-agent-agentlab">7. Mini-Agent / AgentLab</h2>
+<p>AgentLab 和 mini-agent-demo 的意义：</p>
+<blockquote>
+<p>让你看懂并复现一个真正的 Agent：它不是一次调用 LLM，而是 loop + tool
++ skill + memory + trace 的组合。</p>
+</blockquote>
+<p>AgentLab 设计对应概念：</p>
 <table>
 <thead>
 <tr>
-<th>作用</th>
+<th>设计</th>
+<th>Agent 概念</th>
 <th>解释</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>可观测</td>
-<td>知道 Agent 每一步做了什么</td>
+<td>普通 Chat Completion</td>
+<td>LLM 推理</td>
+<td>不依赖 SDK 自带 Agent 框架</td>
 </tr>
 <tr>
-<td>调试</td>
-<td>定位 JSON、工具、memory、skill 问题</td>
+<td>禁用 native tool calling</td>
+<td>harness 控制协议</td>
+<td>自己实现 tool protocol</td>
 </tr>
 <tr>
-<td>评测</td>
-<td>证明真的调用工具，不是编造答案</td>
+<td>JSON：<code>tool_call</code> / <code>final</code></td>
+<td>structured action</td>
+<td>区分行动和最终回答</td>
 </tr>
 <tr>
-<td>效率分析</td>
-<td>看 LLM 请求数、工具次数、token、压缩次数</td>
+<td><code>parse_error</code></td>
+<td>error recovery</td>
+<td>格式错了要修复</td>
+</tr>
+<tr>
+<td>tools</td>
+<td>action space</td>
+<td>文件、shell、skill、memory、subagent</td>
+</tr>
+<tr>
+<td><code>load_skill</code></td>
+<td>on-demand skill</td>
+<td>需要时读流程</td>
+</tr>
+<tr>
+<td><code>save_memory/read_memory</code></td>
+<td>persistent memory</td>
+<td>跨 session 记忆</td>
+</tr>
+<tr>
+<td>trace</td>
+<td>observability</td>
+<td>记录执行证据链</td>
+</tr>
+</tbody>
+</table>
+<p>JSON 协议例子：</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;tool_call&quot;</span><span class="fu">,</span> <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;read_file&quot;</span><span class="fu">,</span> <span class="dt">&quot;arguments&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;path&quot;</span><span class="fu">:</span> <span class="st">&quot;a.txt&quot;</span><span class="fu">}}</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;final&quot;</span><span class="fu">,</span> <span class="dt">&quot;content&quot;</span><span class="fu">:</span> <span class="st">&quot;answer for the user&quot;</span><span class="fu">}</span></span></code></pre></div>
+<p>为什么要手写 JSON 协议：</p>
+<ul>
+<li>把自然语言意图变成结构化 action。</li>
+<li>harness 能解析工具名和参数。</li>
+<li>能限制 Agent 的行动格式。</li>
+<li>方便记录 trace 和处理错误。</li>
+</ul>
+<h2 id="long-run-agent">8. Long-run Agent</h2>
+<p>Code Agent vs Long-run Agent：</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Code Agent</th>
+<th>Long-run Agent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>交互方式</td>
+<td>人发任务，Agent 响应</td>
+<td>Agent 可定时/被消息唤醒</td>
+</tr>
+<tr>
+<td>时间尺度</td>
+<td>单轮/多轮任务</td>
+<td>长期运行</td>
+</tr>
+<tr>
+<td>状态</td>
+<td>会话级，退出易丢</td>
+<td>持久状态</td>
+</tr>
+<tr>
+<td>主动性</td>
+<td>reactive，被动响应</td>
+<td>proactive，主动执行</td>
+</tr>
+<tr>
+<td>典型能力</td>
+<td>写代码、跑测试、修 bug</td>
+<td>监控、提醒、长期任务、个人助理</td>
+</tr>
+</tbody>
+</table>
+<p>课件核心转变：</p>
+<pre class="text"><code>reactive -&gt; proactive</code></pre>
+<p>Long-run Agent 四个关键能力：</p>
+<table>
+<thead>
+<tr>
+<th>能力</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Cron / Heartbeat</code></td>
+<td>定时醒来或定期检查自己该做什么</td>
+</tr>
+<tr>
+<td><code>Persistent Memory</code></td>
+<td>保存长期状态和用户偏好</td>
+</tr>
+<tr>
+<td><code>Self Improvement</code></td>
+<td>沉淀重复流程，修正旧经验</td>
+</tr>
+<tr>
+<td><code>Message / Gateway</code></td>
+<td>接收外部请求，如 IM、网页、服务入口</td>
+</tr>
+</tbody>
+</table>
+<h2 id="时序能力cron-heartbeat">9. 时序能力：Cron / Heartbeat</h2>
+<table>
+<thead>
+<tr>
+<th>机制</th>
+<th>含义</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Cron</code></td>
+<td>按时间表自动醒来执行指定任务</td>
+<td>每天生成技术晨报</td>
+</tr>
+<tr>
+<td><code>Heartbeat</code></td>
+<td>定期醒来做“清醒检查”</td>
+<td>检查 tasks 列表，推自己一把</td>
+</tr>
+<tr>
+<td><code>Gateway</code></td>
+<td>外部消息入口/路由</td>
+<td>微信、QQ、飞书、Telegram</td>
+</tr>
+</tbody>
+</table>
+<p>Cron vs Heartbeat：</p>
+<ul>
+<li>Cron 更像定时任务：到点执行。</li>
+<li>Heartbeat 更像自检机制：醒来后检查有没有该继续推进的事。</li>
+<li>Gateway 让 Agent 不只在命令行里工作，而能接收外部请求。</li>
+</ul>
+<p>考场句：</p>
+<blockquote>
+<p>Long-run Agent 需要时序能力：Cron 让它按时执行，Heartbeat
+让它周期性检查状态，Gateway 让它接收外部消息。</p>
+</blockquote>
+<h2 id="memory-vs-context">10. Memory vs Context</h2>
+<p>课件定义：</p>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>含义</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Context</code></td>
+<td>本轮推理时的上下文</td>
+<td>容量有限，直接影响当前回答</td>
+</tr>
+<tr>
+<td><code>Memory</code></td>
+<td>跨会话保存的持久信息</td>
+<td>容量更大，需要检索后放回 context</td>
+</tr>
+</tbody>
+</table>
+<p>如果 Long-run Agent 没有 memory：</p>
+<ul>
+<li>不同 session 反复问同样问题。</li>
+<li>过去犯的错下次还会犯。</li>
+<li>无法完成长期任务。</li>
+<li>无法保持个性化。</li>
+</ul>
+<p>Memory 记什么：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>事实</td>
+<td>用户偏好、项目背景、长期目标</td>
+</tr>
+<tr>
+<td>状态</td>
+<td>任务进度、环境配置、上下文摘要</td>
+</tr>
+<tr>
+<td>经验</td>
+<td>踩坑记录、固定约定、可复用判断</td>
 </tr>
 </tbody>
 </table>
 <p>一句话：</p>
 <blockquote>
-<p>Trace 是 Agent 执行过程的证据链；复杂 Agent 不能只看 final
-answer，还要看中间行为是否正确。</p>
+<p>Memory 是通过外部系统保存关键信息，并在未来需要时重新检索、放回
+context。</p>
 </blockquote>
-<h2 id="可靠性问题">10. 可靠性问题</h2>
-<p>常见问题和对应概念：</p>
+<h2 id="memory-管理五问">11. Memory 管理五问</h2>
+<p>持久化管理需要解决 5 个问题：</p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>含义</th>
+<th>考场写法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Storage</code></td>
+<td>写到哪里</td>
+<td>文件、数据库、搜索索引、raw logs</td>
+</tr>
+<tr>
+<td><code>Write</code></td>
+<td>什么时候写、怎么写</td>
+<td>事实/状态/经验变重要时写入</td>
+</tr>
+<tr>
+<td><code>Retrieval</code></td>
+<td>什么时候读</td>
+<td>当前 context 缺少所需知识时检索</td>
+</tr>
+<tr>
+<td><code>Update</code></td>
+<td>如何合并和纠错</td>
+<td>新事实覆盖旧事实，冲突要处理</td>
+</tr>
+<tr>
+<td><code>Evict</code></td>
+<td>空间/context 满了怎么办</td>
+<td>压缩、淘汰、晋升、迁移</td>
+</tr>
+</tbody>
+</table>
+<p>Agent Memory 存储层级：</p>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prompt / Active Context</td>
+<td>当前直接可见的信息</td>
+</tr>
+<tr>
+<td>Session History</td>
+<td>当前或近期会话</td>
+</tr>
+<tr>
+<td>User / Project Memory</td>
+<td>用户偏好、项目事实</td>
+</tr>
+<tr>
+<td>Raw Logs</td>
+<td>原始历史记录</td>
+</tr>
+<tr>
+<td>Database / Search Index</td>
+<td>检索和索引用</td>
+</tr>
+</tbody>
+</table>
+<h2 id="检索和淘汰策略">12. 检索和淘汰策略</h2>
+<h3 id="retrieval">Retrieval</h3>
+<p>Agent Memory Retrieval 的几种方式：</p>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>含义</th>
+<th>优缺点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Always inject</code></td>
+<td>固定注入</td>
+<td>简单，但浪费 context</td>
+</tr>
+<tr>
+<td><code>Keyword search</code></td>
+<td>关键词匹配</td>
+<td>快，语义能力弱</td>
+</tr>
+<tr>
+<td><code>Vector search</code></td>
+<td>语义相似度召回</td>
+<td>能找近义内容，但可能误召回</td>
+</tr>
+<tr>
+<td><code>Graph traversal</code></td>
+<td>关系推理</td>
+<td>适合实体/关系复杂场景</td>
+</tr>
+<tr>
+<td><code>Hybrid search</code></td>
+<td>组合检索</td>
+<td>更稳，但系统复杂</td>
+</tr>
+</tbody>
+</table>
+<p>检索触发：</p>
+<blockquote>
+<p>当前上下文没有需要的知识时，从 memory storage 查找相关 item，并注入
+active context。</p>
+</blockquote>
+<h3 id="eviction">Eviction</h3>
+<p>Agent Context Eviction：</p>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Sliding Window</code></td>
+<td>保留最近窗口</td>
+</tr>
+<tr>
+<td><code>Recency</code></td>
+<td>最近使用的优先保留</td>
+</tr>
+<tr>
+<td><code>Frequency</code></td>
+<td>经常被用的优先保留</td>
+</tr>
+<tr>
+<td><code>Relevance</code></td>
+<td>和当前任务相关的优先保留</td>
+</tr>
+<tr>
+<td><code>Heat</code></td>
+<td>综合热度决定晋升或淘汰</td>
+</tr>
+</tbody>
+</table>
+<p>一句话：</p>
+<blockquote>
+<p>Retrieval 决定该把哪些长期信息调入 context；Eviction 决定 context
+满时哪些内容保留、压缩、迁移或淘汰。</p>
+</blockquote>
+<h2 id="memgpt">13. MemGPT</h2>
+<p>核心问题：</p>
+<blockquote>
+<p>LLM 有固定长度的 context
+window；长期对话和大量外部知识会超出窗口。</p>
+</blockquote>
+<p>MemGPT 核心思想：</p>
+<pre class="text"><code>virtual context management</code></pre>
+<p>类比：</p>
+<table>
+<thead>
+<tr>
+<th>OS</th>
+<th>MemGPT / Agent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RAM</td>
+<td>Main Context</td>
+</tr>
+<tr>
+<td>Disk</td>
+<td>External Context</td>
+</tr>
+<tr>
+<td>Page In / Out</td>
+<td>memory function call 读写 memory</td>
+</tr>
+<tr>
+<td>Eviction / Page Replacement</td>
+<td>queue eviction / recall storage</td>
+</tr>
+</tbody>
+</table>
+<p>MemGPT 架构：</p>
+<table>
+<thead>
+<tr>
+<th>部分</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>System Instructions</td>
+<td>定义行为</td>
+</tr>
+<tr>
+<td>Working Context</td>
+<td>高价值信息</td>
+</tr>
+<tr>
+<td>FIFO Queue</td>
+<td>滚动消息历史</td>
+</tr>
+<tr>
+<td>Recall Storage</td>
+<td>过去对话历史</td>
+</tr>
+<tr>
+<td>Archival Storage</td>
+<td>长文档、大规模资料库</td>
+</tr>
+<tr>
+<td>Queue Manager</td>
+<td>管理 FIFO / recall / overflow</td>
+</tr>
+<tr>
+<td>Function Executor</td>
+<td>解析模型输出，执行 memory 读写或检索</td>
+</tr>
+</tbody>
+</table>
+<p>MemGPT 总结：</p>
+<ul>
+<li>让 LLM 像拥有更大上下文。</li>
+<li>main context / external context 多级管理。</li>
+<li>LLM 通过 function calls 主动管理 memory。</li>
+</ul>
+<p>不足：</p>
+<ul>
+<li>FIFO 和 recursive summary 简单但不最优。</li>
+<li>早期消息不一定不重要。</li>
+<li>summary 可能丢细节。</li>
+<li>topic mixing 会影响检索。</li>
+<li>过度依赖 LLM 自己决定 search/update，弱模型不稳定。</li>
+</ul>
+<h2 id="memoryos">14. MemoryOS</h2>
+<p>MemoryOS 目标：</p>
+<blockquote>
+<p>建立统一、系统化的 memory management
+framework，解决长期对话中早期信息丢失、跨会话事实不一致、个性化不足等问题。</p>
+</blockquote>
+<p>核心：<code>STM / MTM / LPM</code> 三层 memory hierarchy。</p>
 <table>
 <colgroup>
 <col style="width: 33%" />
@@ -892,148 +1228,353 @@ answer，还要看中间行为是否正确。</p>
 </colgroup>
 <thead>
 <tr>
-<th>问题</th>
-<th>表现</th>
-<th>应对</th>
+<th>层</th>
+<th>全称</th>
+<th>保存什么</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>hallucination</td>
-<td>编造事实/工具结果</td>
-<td>工具验证，引用 observation</td>
+<td><code>STM</code></td>
+<td>Short-Term Memory</td>
+<td>实时对话数据，基本单位是 dialogue page</td>
 </tr>
 <tr>
-<td>parse error</td>
-<td>输出不符合 JSON</td>
-<td>固定协议，修复重试</td>
+<td><code>MTM</code></td>
+<td>Mid-Term Memory</td>
+<td>按 topic segment 组织的 dialogue pages</td>
 </tr>
 <tr>
-<td>over-planning</td>
-<td>一直计划不行动</td>
-<td>要求必要时调用工具</td>
-</tr>
-<tr>
-<td>context overload</td>
-<td>上下文太长，忽略重点</td>
-<td>compact，retrieval</td>
-</tr>
-<tr>
-<td>stale memory</td>
-<td>旧记忆覆盖新事实</td>
-<td>更新优先</td>
-</tr>
-<tr>
-<td>tool misuse</td>
-<td>工具名/参数错</td>
-<td>schema 清晰，错误反馈</td>
-</tr>
-<tr>
-<td>infinite loop</td>
-<td>重复失败</td>
-<td>最大步数，reflection，停止条件</td>
-</tr>
-<tr>
-<td>token explosion</td>
-<td>prompt/skill/tool result 太长</td>
-<td>按需加载，压缩，限制输出</td>
+<td><code>LPM</code></td>
+<td>Long-Term Persona Memory</td>
+<td>用户画像、知识库、traits、agent persona</td>
 </tr>
 </tbody>
 </table>
-<p>Reflection：</p>
-<blockquote>
-<p>Reflection 是 Agent 根据失败轨迹或冲突 observation
-自我检查、修正计划、更新经验，避免重复同一错误。</p>
-</blockquote>
-<p>Token efficiency：</p>
+<p>MemoryOS 关键机制：</p>
+<table>
+<thead>
+<tr>
+<th>机制</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dialogue page</code></td>
+<td>对话数据基本单位</td>
+</tr>
+<tr>
+<td><code>dialogue chain</code></td>
+<td>保持局部上下文连续</td>
+</tr>
+<tr>
+<td><code>segment</code></td>
+<td>相同 topic 的 pages</td>
+</tr>
+<tr>
+<td><code>segment summary</code></td>
+<td>对一组 pages 的压缩</td>
+</tr>
+<tr>
+<td><code>heat</code></td>
+<td>由访问次数、交互活跃度、recency 计算</td>
+</tr>
+</tbody>
+</table>
+<p>数据迁移：</p>
+<pre class="text"><code>STM --FIFO--&gt; MTM --heat promotion--&gt; LPM</code></pre>
+<p>Retrieval：</p>
 <ul>
-<li>prompt 简洁明确。</li>
-<li>skill 正文按需加载。</li>
-<li>tool result 不要过长。</li>
-<li>compact 保留目标、关键 ID、路径、证据、失败尝试、下一步。</li>
-<li>不做无意义多轮解释。</li>
+<li>STM：最近上下文，全量取回。</li>
+<li>MTM：两阶段检索：segment-level top-m，再 page-level top-k。</li>
+<li>LPM：检索 persona 信息，用户 profile/traits
+等长期信息参与回答。</li>
 </ul>
-<h2 id="简答模板">11. 简答模板</h2>
-<h3 id="agentlab-说明了什么">11.1 AgentLab 说明了什么</h3>
+<h2 id="mem0">15. Mem0</h2>
+<p>Mem0 定位：</p>
 <blockquote>
-<p>AgentLab 说明 Agent 的核心是 <code>LLM + Harness</code>。LLM
-负责推理和生成行动意图，harness 负责 JSON
-协议、工具调度、权限控制、memory、skill、subagent、trace
-和错误恢复。</p>
+<p>面向生产的长期 memory service，更关注 accuracy、latency、token
+cost、scalability、deployability。</p>
 </blockquote>
-<h3 id="agent-是什么">11.2 Agent 是什么</h3>
+<p>核心做法：</p>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Message Pair</td>
+<td>用户输入 + 模型输出作为 interaction unit</td>
+</tr>
+<tr>
+<td>candidate fact</td>
+<td>从新交互中抽取可能值得记忆的事实</td>
+</tr>
+<tr>
+<td>similar memories</td>
+<td>在 memory database 中检索相似旧记忆</td>
+</tr>
+<tr>
+<td>memory operation</td>
+<td>让 LLM 决定如何更新 memory</td>
+</tr>
+</tbody>
+</table>
+<p>Memory operation：</p>
+<pre class="text"><code>ADD / UPDATE / DELETE / NOOP</code></pre>
+<p>一句话：</p>
 <blockquote>
-<p>Agent = LLM + Harness。LLM 负责理解、推理和决策，harness
-负责上下文、工具、权限、记忆和执行反馈。它通过
-perception、cognition、action、observation
-的循环围绕目标持续完成任务。</p>
+<p>Mem0 把 memory update
+看成数据库一致性维护问题：新事实来了以后，要判断是新增、更新、删除还是不操作。</p>
 </blockquote>
-<h3 id="为什么不能只有-llm">11.3 为什么不能只有 LLM</h3>
+<p>MemGPT / MemoryOS / Mem0 对比：</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>维度</th>
+<th>MemGPT</th>
+<th>MemoryOS</th>
+<th>Mem0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>核心</td>
+<td>virtual context</td>
+<td>memory OS</td>
+<td>production memory service</td>
+</tr>
+<tr>
+<td>Swap</td>
+<td>main/external context 搬运</td>
+<td>STM-&gt;MTM-&gt;LPM</td>
+<td>conversation -&gt; facts</td>
+</tr>
+<tr>
+<td>Compression</td>
+<td>recursive summary</td>
+<td>topic segment summary</td>
+<td>salient facts</td>
+</tr>
+<tr>
+<td>Retrieve</td>
+<td>LLM 主动 search</td>
+<td>STM/MTM/LPM 分层检索</td>
+<td>dense vector / graph retrieval</td>
+</tr>
+<tr>
+<td>Evict</td>
+<td>queue eviction</td>
+<td>heat 淘汰/晋升</td>
+<td>ADD/UPDATE/DELETE/NOOP</td>
+</tr>
+</tbody>
+</table>
+<h2 id="自我进化learning-loop">16. 自我进化：Learning Loop</h2>
+<p>Long-run Agent 不能只是记忆，还要自我改进。</p>
+<p>Hermes Learning Loop：</p>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>整理记忆</td>
+<td>从对话中提取值得记住的事实</td>
+</tr>
+<tr>
+<td>创建 skill</td>
+<td>重复模式自动提取为 skill 文件</td>
+</tr>
+<tr>
+<td>优化 skill</td>
+<td>发现现有 skill 错了就修正</td>
+</tr>
+<tr>
+<td>FTS5 召回</td>
+<td>下次遇到类似话题，检索相关历史</td>
+</tr>
+</tbody>
+</table>
+<p>课件问题：</p>
+<pre class="text"><code>反复犯的错、重复的低效行为？
+主动拓展自己的 tool list？
+压缩上下文，建立高效索引知识库？
+定期反思和自我总结？
+知识的迁移、泛化性？</code></pre>
+<p>考场句：</p>
 <blockquote>
-<p>因为 LLM
-只能产生文本或行动意图，真正完成任务还需要工具执行、资源访问、权限隔离、状态维护、错误恢复和日志追踪，这些由
-harness 负责。</p>
+<p>Self-improvement 让 Agent 把一次性经验沉淀为 memory 或
+skill，下次遇到相似任务时能检索、复用并修正旧流程。</p>
 </blockquote>
-<h3 id="tools-function-calling-1">11.4 tools / function calling</h3>
+<h2 id="subagent-multiagent">17. SubAgent / MultiAgent</h2>
+<p>课件位置：Long-run Agent 的 Harness Engineering。</p>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SubAgent</code></td>
+<td>根据任务计划，把子任务下发给子 agent 并行完成</td>
+</tr>
+<tr>
+<td><code>MultiAgent</code></td>
+<td>多个 agent 团队协作，从工作看板领取任务</td>
+</tr>
+<tr>
+<td>Tool 治理</td>
+<td>不是所有工具都给 agent 用，需要黑/白名单</td>
+</tr>
+<tr>
+<td>Context 治理</td>
+<td>持久稳定运行的基石</td>
+</tr>
+<tr>
+<td>硬性约束</td>
+<td>不能只靠 prompt 软约束，要靠系统约束</td>
+</tr>
+</tbody>
+</table>
+<p>SubAgent 适用：</p>
+<ul>
+<li>子任务边界清晰。</li>
+<li>输入输出明确。</li>
+<li>需要并行或复核。</li>
+<li>主 agent 不想塞太多局部细节。</li>
+</ul>
+<p>风险：</p>
+<ul>
+<li>token 成本上升。</li>
+<li>角色不清会互相推诿。</li>
+<li>子 agent 错误会污染主流程。</li>
+<li>需要明确停止条件和输出格式。</li>
+</ul>
+<h2 id="简答模板">18. 简答模板</h2>
+<h3 id="agent-是什么">18.1 Agent 是什么</h3>
 <blockquote>
-<p>Tool calling 的关键是受控执行：LLM 产生 action intent，harness
-按协议解析并检查权限，再执行工具并把结果回填为 observation。</p>
+<p>Agent = LLM + Harness。LLM 负责理解、推理和生成行动意图；harness 负责
+loop、tools、memory、skill、权限、执行和反馈。Agent 围绕 goal
+多轮行动，而不是只生成一次回答。</p>
 </blockquote>
-<h3 id="为什么要手写-json-协议">11.5 为什么要手写 JSON 协议</h3>
+<h3 id="chatbot-copilot-agent-的区别">18.2 ChatBot / Copilot / Agent
+的区别</h3>
 <blockquote>
-<p>JSON 协议把自然语言意图变成结构化 action，使 harness
-能稳定解析工具名和参数，区分 <code>tool_call</code> 与
-<code>final</code>，并在格式错误时记录 <code>parse_error</code>
-进行恢复。</p>
+<p>ChatBot 输入一句问题、输出一段回答；Copilot
+根据局部上下文补全代码；Agent 输入一个任务，利用完整项目上下文、tool 和
+loop 交付执行过程与结果。</p>
 </blockquote>
-<h3 id="为什么-memory-要分层">11.6 为什么 memory 要分层</h3>
+<h3 id="tab-ide-cli-agent-的区别">18.3 Tab / IDE / CLI Agent 的区别</h3>
 <blockquote>
-<p>因为上下文窗口有限，Agent
-不能保留全部历史，只能把重要信息按需加载，对当前上下文压缩/替换，并把稳定事实持久化保存。<code>context compact</code>
-不等于长期 memory。</p>
+<p>Tab Complete 适合局部、低风险补全；IDE Agent 适合仓库内小功能、重构和
+bug 修复；CLI Agent 权限更大，能读写文件、跑命令并完成仓库级任务。</p>
 </blockquote>
-<h3 id="skill-是什么">11.7 skill 是什么</h3>
+<h3 id="tool-provider-model-怎么区分">18.4 Tool / Provider / Model
+怎么区分</h3>
 <blockquote>
-<p>Skill 是可按需加载的流程说明或经验库。system prompt
-只放名称和摘要，真正需要时加载正文，以减少 token 并让模型按 checklist
-行动。</p>
+<p>Tool 是 Agent 产品或运行环境，Provider 是 API/计费/路由平台，Model
+是实际推理生成的模型。三者分别对应交互工具、服务提供方和智能核心。</p>
 </blockquote>
-<h3 id="trace-有什么用">11.8 trace 有什么用</h3>
+<h3 id="为什么需要-tool">18.5 为什么需要 Tool</h3>
 <blockquote>
-<p>Trace 记录
-<code>llm_response</code>、<code>tool_call</code>、<code>parse_error</code>、memory
-操作和 <code>final</code>，用于调试、评测和证明 Agent
-真的按步骤执行，而不是只编造最终答案。</p>
+<p>LLM 只能产生行动意图，工具让 Agent
+访问文件、运行命令、调用外部服务并改变环境。工具结果作为 observation
+回填，帮助下一轮推理并减少幻觉。</p>
 </blockquote>
-<h3 id="subagent-有什么好处">11.9 subagent 有什么好处</h3>
+<h3 id="skill-是什么">18.6 Skill 是什么</h3>
 <blockquote>
-<p>Subagent
-能把复杂任务拆成边界清晰的子任务，由不同角色并行推进并互相校验，从而降低主上下文复杂度，提高扩展性和鲁棒性。</p>
+<p>Skill 是把某个领域的流程、知识和 checklist 封装成
+<code>skill.md</code>，在需要时按需加载。它避免把所有知识塞进
+prompt，并让 Agent 对重复任务有稳定流程。</p>
 </blockquote>
-<h2 id="高频词">12. 高频词</h2>
+<h3 id="long-run-agent-是什么">18.7 Long-run Agent 是什么</h3>
+<blockquote>
+<p>Long-run Agent 从 reactive 变成
+proactive，不需要人一直坐在旁边。它通过 cron/heartbeat 定期醒来，通过
+gateway 接收外部消息，通过 persistent memory 保存长期状态，并通过
+learning loop 自我改进。</p>
+</blockquote>
+<h3 id="memory-和-context-的区别">18.8 Memory 和 Context 的区别</h3>
+<blockquote>
+<p>Context 是本轮推理可见的信息，容量有限；Memory
+是跨会话保存的持久信息，容量更大，但需要检索后放回 context。没有
+memory，Long-run Agent 会反复忘记用户偏好、任务状态和历史经验。</p>
+</blockquote>
+<h3 id="memory-管理五问-1">18.9 Memory 管理五问</h3>
+<blockquote>
+<p>持久化 memory 要解决
+Storage、Write、Retrieval、Update、Evict：写到哪里，什么时候写，什么时候读，如何合并纠错，以及空间或
+context 满了怎么处理。</p>
+</blockquote>
+<h3 id="memgpt-memoryos-mem0-如何理解">18.10 MemGPT / MemoryOS / Mem0
+如何理解</h3>
+<blockquote>
+<p>MemGPT 用 virtual context management 让 LLM
+像拥有更大上下文；MemoryOS 用 STM/MTM/LPM 建立分层 memory system；Mem0
+面向生产，把 memory update 看成 ADD/UPDATE/DELETE/NOOP
+的一致性维护。</p>
+</blockquote>
+<h3 id="self-improvement-有什么用">18.11 Self-improvement 有什么用</h3>
+<blockquote>
+<p>Self-improvement 把对话中的重要事实写入 memory，把重复模式沉淀成
+skill，并在发现旧 skill 错误时修正，使 Agent
+下次遇到类似任务能复用经验、减少重复犯错。</p>
+</blockquote>
+<h3 id="subagent-multiagent-有什么用">18.12 SubAgent / MultiAgent
+有什么用</h3>
+<blockquote>
+<p>SubAgent 把边界清晰的子任务下发出去并行完成，主 agent
+汇总结果；MultiAgent 则让多个 agent
+团队协作。关键是角色清楚、输入输出明确、能通信和校验。</p>
+</blockquote>
+<h2 id="高频词">19. 高频词</h2>
 <ul>
 <li><code>Agent = LLM + Harness</code></li>
-<li><code>Perception -&gt; Cognition -&gt; Action -&gt; Observation</code></li>
-<li><code>ReAct = reasoning + acting</code></li>
-<li><code>tool_call / final / parse_error</code></li>
-<li><code>protocol / permission / observation / trace</code></li>
-<li><code>context compact != persistent memory</code></li>
-<li><code>read_memory / save_memory / retrieval</code></li>
-<li><code>SkillLoader / load_skill / SKILL.md</code></li>
-<li><code>subagent / ask_subagent</code></li>
-<li><code>reflection / self-correction</code></li>
-<li><code>token efficiency / context compression</code></li>
+<li><code>Loop / Tool / Skill</code></li>
+<li><code>ChatBot Answer -&gt; Copilot Suggest -&gt; Agent Act</code></li>
+<li><code>Tab Complete -&gt; IDE Agent -&gt; CLI Agent</code></li>
+<li><code>Tool / Provider / Model</code></li>
+<li><code>Goal / Context / Constraints / Output / Verification</code></li>
+<li><code>reactive -&gt; proactive</code></li>
+<li><code>Cron / Heartbeat / Gateway</code></li>
+<li><code>Persistent Memory</code></li>
+<li><code>Storage / Write / Retrieval / Update / Evict</code></li>
+<li><code>Always inject / Keyword / Vector / Graph / Hybrid</code></li>
+<li><code>Sliding Window / Recency / Frequency / Relevance / Heat</code></li>
+<li><code>MemGPT: virtual context management</code></li>
+<li><code>MemoryOS: STM / MTM / LPM</code></li>
+<li><code>Mem0: ADD / UPDATE / DELETE / NOOP</code></li>
+<li><code>Learning Loop / Self Improvement</code></li>
+<li><code>SubAgent / MultiAgent</code></li>
 </ul>
-<h2 id="考场最后-20-秒">13. 考场最后 20 秒</h2>
+<h2 id="考场最后-20-秒">20. 考场最后 20 秒</h2>
 <ol type="1">
 <li>总纲：<code>Agent = LLM + Harness</code></li>
-<li>AgentLab：<code>手写 JSON loop + tools + skills + memory + trace</code></li>
-<li>loop：<code>Perception -&gt; Cognition -&gt; Action -&gt; Observation</code></li>
-<li>tools：<code>intent -&gt; protocol -&gt; execute -&gt; observation</code></li>
-<li>protocol：<code>tool_call / final / parse_error</code></li>
-<li>memory：<code>context compact != persistent memory</code></li>
-<li>skill：<code>摘要进 prompt，正文按需 load</code></li>
-<li>subagent：<code>委托局部任务，主 agent 汇总</code></li>
+<li>Code Agent：<code>ChatBot -&gt; Copilot -&gt; Agent Act</code></li>
+<li>形态：<code>Tab -&gt; IDE -&gt; CLI</code></li>
+<li>三层：<code>Tool / Provider / Model</code></li>
+<li>Prompt：<code>Goal / Context / Constraints / Output / Verification</code></li>
+<li>Long-run：<code>reactive -&gt; proactive</code></li>
+<li>时序：<code>Cron / Heartbeat / Gateway</code></li>
+<li>Memory：<code>Context 有限，Memory 持久</code></li>
+<li>五问：<code>Storage / Write / Retrieval / Update / Evict</code></li>
+<li>三系统：<code>MemGPT / MemoryOS / Mem0</code></li>
 </ol>
 </body>
 </html>
